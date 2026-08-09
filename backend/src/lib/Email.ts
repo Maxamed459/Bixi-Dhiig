@@ -1,22 +1,26 @@
-import { Resend } from "resend";
-import { RESEND_API_KEY } from "../config/dotenv.js";
-import { string } from "zod";
-import { logger } from "../config/logger.js";
+import { google } from "googleapis";
+import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_REFRESH_TOKEN,
+  GOOGLE_REDIRECT_URI,
+} from "../config/dotenv.js";
 
-const resend = new Resend(RESEND_API_KEY);
-const from = process.env.EMAIL_FROM || "Acme <onboarding@resend.dev>";
+// initialize oAuth2 client
+const oAuth2Client = new google.auth.OAuth2(
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URI,
+);
 
-export const sendVerificationEmail = async (to: string) => {
-  try {
-    const { data, error } = await resend.emails.send({
-      from,
-      to: [to],
-      subject: "Hello from Resend!",
-      html: "<h1>Welcome!</h1><p>This email was sent using Resend's Node.js SDK.</p>",
-      text: "Welcome! This email was sent using Resend's Node.js SDK.",
-    });
-  } catch (error) {
-    logger.info(error);
-    process.exit(1);
-  }
+oAuth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
+
+export const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
+
+export const encodeMessage = (message: string) => {
+  return Buffer.from(message)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 };
