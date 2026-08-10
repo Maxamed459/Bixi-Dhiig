@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyJwtToken } from "../lib/jwt.js";
+import { verifyAccessToken } from "../lib/jwt.js";
 import { prisma } from "../lib/prisma.js";
 
 declare global {
@@ -27,7 +27,7 @@ export const authenticate = async (
 
     const token = authorization.split(" ")[1];
 
-    const payload = await verifyJwtToken(token);
+    const payload = await verifyAccessToken(token);
 
     const userId = payload.sub as string;
 
