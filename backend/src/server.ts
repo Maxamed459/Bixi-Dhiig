@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 import { Request, Response } from "express";
 import { PORT } from "./config/dotenv.js";
 import { logger } from "./config/logger.js";
@@ -12,6 +13,7 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use((req, res, next) => {
   const startedAt = Date.now();
 
