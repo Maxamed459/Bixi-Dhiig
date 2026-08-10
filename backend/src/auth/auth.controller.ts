@@ -3,7 +3,10 @@ import { logger } from "../config/logger.js";
 import {
   createNewUser,
   findUserByEmail,
+  findUserById,
+  findUserByIdWithHashPassword,
   update_is_email_verified,
+  updateLastLogin,
 } from "./auth.service.js";
 import bcrypt from "bcrypt";
 import {
@@ -16,7 +19,21 @@ import {
 import { prisma } from "../lib/prisma.js";
 import { success } from "zod";
 import { sendWelcomeEmail } from "../services/mail/welcome.service.js";
-import { createJwtToken } from "../lib/jwt.js";
+import {
+  createAccessToken,
+  createRefreshToken,
+  verifyRefreshToken,
+} from "../lib/jwt.js";
+import { JWT_REFRESH_SECRET } from "../config/dotenv.js";
+import { AppError } from "../lib/appError.js";
+import {
+  checkRedisHashRefreshToken,
+  hashRefreshToken,
+  rotateRefreshToken,
+} from "../services/refreshTokenRotation.js";
+import { getRedisClient } from "../lib/redis.js";
+
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 export const register = async (req: Request, res: Response) => {
   const { display_name, email, password } = req.body;
@@ -37,10 +54,16 @@ export const register = async (req: Request, res: Response) => {
 
     await sendOtpEmail(newUser.email, otpCode);
 
-    const accessToken = await createJwtToken(newUser.id, "access");
-    const refreshToken = await createJwtToken(newUser.id, "refresh");
+    const accessToken = await createAccessToken(newUser.id);
+    const refreshToken = await createRefreshToken(newUser.id);
 
-    console.log(`accessToken ${accessToken} refreshToken ${refreshToken}`);
+    const client = getRedisClient();
+
+    const rediskey = `refresh:${newUser.id}`;
+
+    await client.del(rediskey);
+
+    await rotateRefreshToken(newUser.id);
 
     const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -70,7 +93,7 @@ export const register = async (req: Request, res: Response) => {
 };
 
 // resend code handler
-export const resendCode = async (req: Request, res: Response) => {
+export const resendOtpCode = async (req: Request, res: Response) => {
   const { email } = req.user.email;
   try {
     const user = await findUserByEmail(email);
@@ -78,7 +101,14 @@ export const resendCode = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: "email doesn't exist please register",
+        message: "email doesn't exist please register.",
+      });
+    }
+
+    if (user.is_email_verified) {
+      return res.status(409).json({
+        success: false,
+        message: "This email is already verified.",
       });
     }
 
@@ -103,16 +133,15 @@ export const resendCode = async (req: Request, res: Response) => {
 export const verifyEmail = async (req: Request, res: Response) => {
   const { submittedCode } = req.body;
   const user = req.user;
-  const userId = req.user.id;
 
   try {
     if (user.is_email_verified) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "This email is alraedy verified",
       });
     }
-    const verified = await verifyOtp(userId, submittedCode);
+    const verified = await verifyOtp(user.id, submittedCode);
 
     if (!verified.valid) {
       return res.status(400).json({
@@ -121,19 +150,180 @@ export const verifyEmail = async (req: Request, res: Response) => {
       });
     }
 
-    const update_isVerified_email = await update_is_email_verified(userId);
+    const update_isVerified_email = await update_is_email_verified(user.id);
 
-    const welcome = await sendWelcomeEmail(
+    await sendWelcomeEmail(
       update_isVerified_email.email,
       update_isVerified_email.display_name,
     );
-
-    console.log("welcome email", welcome);
 
     return res.status(200).json({
       success: true,
       message: "email verified successful.",
     });
+  } catch (error) {
+    logger.info(error);
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
+// login handler
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  try {
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const hashedPassword = await findUserByIdWithHashPassword(user.id);
+
+    const isPasswordCorrect = await bcrypt.compare(password, hashedPassword!);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const updatedUser = await updateLastLogin(user.email);
+
+    const accessToken = await createAccessToken(user.id);
+    const refreshToken = await createRefreshToken(user.id);
+
+    const client = getRedisClient();
+
+    const rediskey = `refresh:${user.id}`;
+    await client.del(rediskey);
+
+    await rotateRefreshToken(user.id);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      maxAge: SEVEN_DAYS_MS,
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: {
+        user: updatedUser,
+        accessToken,
+      },
+      message: "user created successfully",
+    });
+  } catch (error) {
+    logger.info(error);
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
+// refreshToken handler
+
+export const createNewAccessToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token not provided",
+    });
+  }
+  try {
+    if (!JWT_REFRESH_SECRET) {
+      throw new AppError(500, "JWT refresh configuration is missing");
+    }
+
+    const decoded = await verifyRefreshToken(refreshToken);
+
+    if (decoded.type !== "refresh") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token type",
+      });
+    }
+
+    const oldRefreshToken = hashRefreshToken(refreshToken);
+
+    const client = getRedisClient();
+
+    const rediskey = `refresh:${oldRefreshToken}`;
+
+    const storedRefreshToken = await checkRedisHashRefreshToken(rediskey);
+    if (!storedRefreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired refresh token",
+      });
+    }
+
+    const user = await findUserById(decoded.sub!);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "user not found",
+      });
+    }
+
+    await client.del(rediskey);
+
+    const newRefreshToken = await createRefreshToken(user.id);
+
+    await rotateRefreshToken(user.id);
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      maxAge: SEVEN_DAYS_MS,
+    });
+
+    const newAccessToken = await createAccessToken(user.id);
+
+    return res.status(201).json({
+      success: true,
+      data: {
+        accessToken: newAccessToken,
+      },
+      message: "accessToken created successfully!",
+    });
+  } catch (error) {
+    logger.info(error);
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
+// reset password
+export const changePassword = async (req: Request, res: Response) => {
+  const { oldPassword } = req.body;
+  const email = req.user.email;
+
+  try {
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
   } catch (error) {
     logger.info(error);
     return res.status(500).json({
