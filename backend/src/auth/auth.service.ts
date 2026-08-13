@@ -2,6 +2,13 @@ import { email } from "zod";
 import { AppError } from "../lib/appError.js";
 import { prisma } from "../lib/prisma.js";
 
+interface googleUserProfile {
+  providerUserId: string;
+  email: string;
+  name: string;
+  picture: string;
+}
+
 // find user by email
 export const findUserByEmail = async (email: string) => {
   return await prisma.user.findFirst({
@@ -45,6 +52,40 @@ export const createNewUser = async (
           userId: user.id,
           provider: "PASSWORD",
           passwordHash: hashedPassword,
+        },
+      });
+
+      return user;
+    });
+
+    return newUser;
+  } catch (error) {
+    throw new AppError(500, "Failed to create user", error);
+  }
+};
+
+const createGoogleAuthUser = async (
+  display_name: string,
+  email: string,
+  providerUserId: string,
+  picture?: string,
+) => {
+  try {
+    const newUser = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          display_name: display_name,
+          email: email,
+          avater: picture,
+          is_email_verified: true,
+        },
+      });
+
+      await tx.oauthAccount.create({
+        data: {
+          userId: user.id,
+          provider: "GOOGLE",
+          providerUserId: providerUserId,
         },
       });
 
@@ -107,4 +148,24 @@ export const updatePassowrd = async (
       passwordHash: hashNewPassword,
     },
   });
+};
+
+// find or create user - google oauth
+export const findOrCreateUser = async (profile: googleUserProfile) => {
+  let user = await prisma.user.findUnique({
+    where: {
+      email: profile.email,
+    },
+  });
+
+  if (!user) {
+    await createGoogleAuthUser(
+      profile.name,
+      profile.email,
+      profile.picture,
+      profile.providerUserId,
+    );
+  }
+
+  return user;
 };
