@@ -1,7 +1,9 @@
 import express from "express";
 import {
+  changePassword,
   createNewAccessToken,
   login,
+  logout,
   register,
   resendOtpCode,
   verifyEmail,
@@ -15,5 +17,7 @@ authRouter.post("/login", login);
 authRouter.post("/resend-code", authenticate, resendOtpCode);
 authRouter.post("/verify", authenticate, verifyEmail);
 authRouter.post("/refresh-token", createNewAccessToken);
+authRouter.post("/change-password", authenticate, changePassword);
+authRouter.post("/logout", authenticate, logout);
 
 export default authRouter;
