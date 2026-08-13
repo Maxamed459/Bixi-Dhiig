@@ -2,6 +2,7 @@ import { email } from "zod";
 import { AppError } from "../lib/appError.js";
 import { prisma } from "../lib/prisma.js";
 
+// find user by email
 export const findUserByEmail = async (email: string) => {
   return await prisma.user.findFirst({
     where: {
@@ -10,6 +11,7 @@ export const findUserByEmail = async (email: string) => {
   });
 };
 
+// find user with hashedPassword
 export const findUserByIdWithHashPassword = async (userId: string) => {
   const account = await prisma.oauthAccount.findUnique({
     where: {
@@ -22,6 +24,7 @@ export const findUserByIdWithHashPassword = async (userId: string) => {
   return account?.passwordHash;
 };
 
+// create user
 export const createNewUser = async (
   display_name: string,
   email: string,
@@ -54,6 +57,7 @@ export const createNewUser = async (
   }
 };
 
+// update the is_email_verified field
 export const update_is_email_verified = async (userId: string) => {
   try {
     return await prisma.user.update({
@@ -69,6 +73,7 @@ export const update_is_email_verified = async (userId: string) => {
   }
 };
 
+// update last_login_at
 export const updateLastLogin = async (email: string) => {
   return await prisma.user.update({
     where: {
@@ -80,10 +85,26 @@ export const updateLastLogin = async (email: string) => {
   });
 };
 
+// find user by id
 export const findUserById = async (userId: string) => {
   return await prisma.user.findUnique({
     where: {
       id: userId,
+    },
+  });
+};
+
+// update users password
+export const updatePassowrd = async (
+  userId: string,
+  hashNewPassword: string,
+) => {
+  return await prisma.oauthAccount.update({
+    where: {
+      userId,
+    },
+    data: {
+      passwordHash: hashNewPassword,
     },
   });
 };
