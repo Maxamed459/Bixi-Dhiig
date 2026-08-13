@@ -7,6 +7,7 @@ import {
   findUserByIdWithHashPassword,
   update_is_email_verified,
   updateLastLogin,
+  updatePassowrd,
 } from "./auth.service.js";
 import bcrypt from "bcrypt";
 import {
@@ -24,7 +25,7 @@ import {
   createRefreshToken,
   verifyRefreshToken,
 } from "../lib/jwt.js";
-import { JWT_REFRESH_SECRET } from "../config/dotenv.js";
+import { JWT_REFRESH_SECRET, NODE_ENV } from "../config/dotenv.js";
 import { AppError } from "../lib/appError.js";
 import {
   checkRedisHashRefreshToken,
@@ -232,7 +233,6 @@ export const login = async (req: Request, res: Response) => {
 };
 
 // refreshToken handler
-
 export const createNewAccessToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
@@ -255,11 +255,11 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
       });
     }
 
-    const oldRefreshToken = hashRefreshToken(refreshToken);
+    const userId = decoded.sub;
 
     const client = getRedisClient();
 
-    const rediskey = `refresh:${oldRefreshToken}`;
+    const rediskey = `refresh:${userId}`;
 
     const storedRefreshToken = await checkRedisHashRefreshToken(rediskey);
     if (!storedRefreshToken) {
@@ -312,7 +312,7 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
 
 // reset password
 export const changePassword = async (req: Request, res: Response) => {
-  const { oldPassword } = req.body;
+  const { currentPassword, newPassword } = req.body;
   const email = req.user.email;
 
   try {
@@ -324,6 +324,68 @@ export const changePassword = async (req: Request, res: Response) => {
         message: "Invalid email or password",
       });
     }
+    const hashedPassword = await findUserByIdWithHashPassword(user.id);
+    console.log(hashedPassword);
+
+    const isPasswordCorrect = await bcrypt.compare(
+      currentPassword,
+      hashedPassword!,
+    );
+
+    console.log("password correct", isPasswordCorrect);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const hashNewPassword = await bcrypt.hash(newPassword, 10);
+
+    await updatePassowrd(user.id, hashNewPassword);
+
+    return res.status(200).json({
+      success: true,
+      message: "password updated successfully.",
+    });
+  } catch (error) {
+    logger.info(error);
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
+// logout handler
+export const logout = async (req: Request, res: Response) => {
+  const user = req.user;
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(400).json({
+      success: false,
+      message: "refreshtoken not provided",
+    });
+  }
+  try {
+    const client = getRedisClient();
+    const rediskey = `refresh:${user.id}`;
+
+    await client.del(rediskey);
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: NODE_ENV === "production",
+      sameSite: "none",
+      path: "/",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "logout successfully.",
+    });
   } catch (error) {
     logger.info(error);
     return res.status(500).json({
