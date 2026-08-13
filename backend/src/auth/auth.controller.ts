@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { logger } from "../config/logger.js";
 import {
   createNewUser,
+  findOrCreateUser,
   findUserByEmail,
   findUserById,
   findUserByIdWithHashPassword,
@@ -17,15 +18,19 @@ import {
   sendOtpEmail,
   verifyOtp,
 } from "../services/mail/otp.service.js";
-import { prisma } from "../lib/prisma.js";
-import { success } from "zod";
 import { sendWelcomeEmail } from "../services/mail/welcome.service.js";
 import {
   createAccessToken,
   createRefreshToken,
   verifyRefreshToken,
 } from "../lib/jwt.js";
-import { JWT_REFRESH_SECRET, NODE_ENV } from "../config/dotenv.js";
+import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_OAUTH_REDIRECT_URI,
+  JWT_REFRESH_SECRET,
+  NODE_ENV,
+} from "../config/dotenv.js";
 import { AppError } from "../lib/appError.js";
 import {
   checkRedisHashRefreshToken,
@@ -33,6 +38,9 @@ import {
   rotateRefreshToken,
 } from "../services/refreshTokenRotation.js";
 import { getRedisClient } from "../lib/redis.js";
+import { google } from "googleapis";
+import crypto from "crypto";
+import { string } from "zod";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -393,4 +401,101 @@ export const logout = async (req: Request, res: Response) => {
       message: error,
     });
   }
+};
+
+// google auth
+
+const oAuth2Client = new google.auth.OAuth2(
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_OAUTH_REDIRECT_URI,
+);
+
+export const googleOauth = (_req: Request, res: Response) => {
+  const state = crypto.randomBytes(32).toString("hex");
+
+  res.cookie("oauth_state", state, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 5 * 60 * 1000, // 5 minutes — state cookie should be short-lived
+  });
+
+  const url = oAuth2Client.generateAuthUrl({
+    access_type: "offline",
+    prompt: "consent",
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+    ],
+    state,
+  });
+
+  res.redirect(url);
+};
+
+export const googleOauthCalback = async (req: Request, res: Response) => {
+  const { code, state } = req.query;
+  const savedState = req.cookies.oauth_state;
+
+  res.clearCookie("oauth_state");
+
+  if (!state || state !== savedState) {
+    return res.status(403).json({
+      success: false,
+      message: "Invalid state",
+    });
+  }
+
+  if (!code || typeof code !== "string") {
+    return res.status(400).json({
+      success: false,
+      message: "Missing authorization code",
+    });
+  }
+
+  try {
+    const { tokens } = await oAuth2Client.getToken(code);
+    oAuth2Client.setCredentials(tokens);
+
+    const oauth2 = google.oauth2({ version: "v2", auth: oAuth2Client });
+    const { data: profile } = await oauth2.userinfo.get();
+
+    if (!profile.email || !profile.verified_email) {
+      return res.status(400).json({
+        success: false,
+        message: "Google account email not verified",
+      });
+    }
+
+    // find or create the user
+    const user = await findOrCreateUser({
+      providerUserId: profile.id!,
+      email: profile.email,
+      name: profile.name!,
+      picture: profile.picture!,
+    });
+
+    const accessToken = await createAccessToken(user!.id);
+    const refreshToken = await createRefreshToken(user!.id);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      maxAge: SEVEN_DAYS_MS,
+    });
+
+    await sendWelcomeEmail(user!.email, user!.display_name);
+
+    return res.status(201).json({
+      success: true,
+      data: {
+        user: user,
+        accessToken,
+      },
+      message: "user created successfully",
+    });
+  } catch (error) {}
 };
