@@ -1,111 +1,126 @@
-# Bixi-Dhiig Web — Auth System Notes
+# Bixi-Dhiig Web — Auth System Notes (v2: Redux Toolkit + Google auth)
+
+## What changed from v1
+
+- **React Context → Redux Toolkit.** `providers/auth-provider.tsx`, `lib/auth-store.ts`,
+  `lib/auth-api.ts`, and `lib/api-client.ts` are gone. Auth state now lives in
+  `store/features/authSlice.ts` and is read via `store/hooks.ts` (`useAppSelector` /
+  `useAppDispatch`).
+- **`hooks/useAuth.ts` and `hooks/useRequireAuth.ts` keep the same public shape** as before
+  (`login`, `register`, `verify`, `resendCode`, `logout`, `user`, `isAuthenticated`,
+  `isLoading`) — only their internals changed, from Context to Redux. Nothing in
+  `components/layout/sidebar.tsx`, `app/dashboard/page.tsx`, `app/dashboard/profile/page.tsx`,
+  or `app/verify-email/page.tsx` needed to change as a result.
+- **Register endpoint changed** to `POST /auth/register-hospital` (was `/auth/register`).
+- **Login/Register UI rebuilt** as a two-column `AuthLayout` (brand panel + form card),
+  with the form logic extracted into standalone `LoginForm` / `RegisterForm` components.
+- **"Continue with Google" added** to both `/login` and `/register` via a shared
+  `GoogleAuthButton` — pure redirect to `NEXT_PUBLIC_GOOGLE_AUTH_URL`, no client-side faking.
 
 ## Setup
 
 ```bash
-# from the web/ folder
 npm install
-cp .env.local.example .env.local   # already done for you; edit if your API runs elsewhere
+cp .env.local.example .env.local   # already set up for local dev
 npm run dev
 ```
 
-The packages this auth system needs (already installed in this project):
+New packages this update added on top of the previous auth system:
 
 ```bash
-npm install react-hook-form @hookform/resolvers zod @tanstack/react-query axios sonner \
-  class-variance-authority clsx tailwind-merge lucide-react \
-  @radix-ui/react-label @radix-ui/react-slot @radix-ui/react-select
+npm install @reduxjs/toolkit react-redux
 ```
 
-## Folder structure
+## Folder structure (additions/changes only — see previous notes for the rest)
 
 ```
 web/
-  app/
-    layout.tsx                # Providers + Toaster, root HTML shell
-    page.tsx                  # "/" -> redirects straight to /login
-    login/page.tsx
-    register/page.tsx
-    verify-email/page.tsx
-    unauthorized/page.tsx
-    dashboard/
-      layout.tsx               # Protected shell: sidebar + role guard
-      page.tsx                 # Dashboard home
-      profile/page.tsx
-  components/
-    ui/                        # button, input, label, card, select, badge, sonner, form-field
-    layout/sidebar.tsx
-  hooks/
-    useAuth.ts
-    useRequireAuth.ts
+  store/
+    store.ts                  # configureStore({ auth: authReducer })
+    hooks.ts                  # useAppDispatch / useAppSelector (typed)
+    features/
+      authSlice.ts             # user, accessToken, isAuthenticated, status
   providers/
-    auth-provider.tsx          # Session bootstrap, login/register/verify/logout
-    query-provider.tsx         # TanStack Query client
+    ReduxProvider.tsx          # <Provider store={store}> + session bootstrap
+    query-provider.tsx         # unchanged (TanStack Query)
+  components/
+    auth/
+      AuthLayout.tsx            # two-column shell (brand panel + form slot)
+      GoogleAuthButton.tsx        # redirects to NEXT_PUBLIC_GOOGLE_AUTH_URL
+      LoginForm.tsx
+      RegisterForm.tsx
   lib/
-    api-client.ts               # Axios instance + refresh-on-401 interceptor
-    auth-api.ts                  # POST /auth/login, /register, /verify, /resend-code
-    auth-store.ts                 # External store: { user, accessToken } (memory only)
-    role-guard.ts                  # DASHBOARD_ROLES + isAllowedRole()
-    validation.ts                   # Zod schemas for the 3 forms
-    get-error-message.ts             # Normalizes Axios errors into a toast-friendly string
-    types.ts                          # User, AuthPayload, ApiEnvelope
-  .env.local.example
+    api.ts                     # Axios instance, reads/writes the Redux store directly
+    auth.ts                    # POST /auth/login, /register-hospital, /verify, /resend-code
+    role-guard.ts, validation.ts, types.ts, get-error-message.ts, utils.ts  (unchanged)
+  hooks/
+    useAuth.ts                  # Redux-backed (was Context-backed)
+    useRequireAuth.ts            # Redux-backed (was Context-backed)
+  app/
+    login/page.tsx               # AuthLayout + LoginForm
+    register/page.tsx             # AuthLayout + RegisterForm
+    dashboard/layout.tsx            # unchanged, still calls useRequireAuth()
 ```
 
-## How the auth flow works
+## How auth state flows now
 
-- **Access token** lives only in a module-level variable (`lib/auth-store.ts`) — never in
-  `localStorage`, `sessionStorage`, or a JS-readable cookie. `AuthProvider` subscribes to
-  this store via `useSyncExternalStore` so React re-renders when it changes, and
-  `lib/api-client.ts` reads from the same store to attach `Authorization: Bearer <token>`
-  to every request.
-- **Refresh token** is entirely backend-owned: an HttpOnly cookie your browser sends
-  automatically (`withCredentials: true` on the Axios instance). The frontend never touches it.
-- **Session bootstrap**: on every app load, `AuthProvider` calls `POST /auth/refresh-token`
-  once. If it succeeds, the user is silently signed back in; if not, they land on `/login`.
-- **401 handling**: any authenticated request that gets a 401 triggers one automatic
-  refresh-and-retry via the Axios response interceptor. If the refresh also fails, the
-  user is logged out.
-- **Role gate**: `lib/role-guard.ts` defines `DASHBOARD_ROLES = ["admin", "hospital"]`.
-  - On login, if `user.role` isn't in that list, the session is cleared, a toast fires, and
-    the user is sent to `/unauthorized` (not the dashboard).
-  - `useRequireAuth()` (used in `app/dashboard/layout.tsx`) re-checks this on every
-    protected route mount — so a role change or a tampered/stale session can't sneak in.
+- `authSlice` holds `{ user, accessToken, isAuthenticated, status }`.
+  `status` is `"idle" | "loading" | "succeeded" | "failed"` and is what `isLoading` is
+  derived from in both hooks.
+- `lib/api.ts` imports the Redux `store` directly (not via a hook, since Axios interceptors
+  run outside React) to read the current `accessToken` on every request, and to dispatch
+  `setCredentials` / `setAccessToken` / `logout` when a silent refresh succeeds or fails.
+- `providers/ReduxProvider.tsx` wraps the whole app and, on mount, dispatches
+  `setStatus("loading")` then calls `refreshAccessToken()` — this is the "silent session
+  restore" that runs on every page load, including a fresh landing after Google OAuth
+  redirects back.
+- `hooks/useAuth.ts` wraps `useAppDispatch`/`useAppSelector` and the `lib/auth.ts` request
+  functions into the same convenience API the pages already used.
+- `hooks/useRequireAuth.ts` (used in `app/dashboard/layout.tsx`) reads `isAuthenticated` /
+  `user.role` from Redux and redirects to `/login` (no session) or `/unauthorized` + logout
+  (wrong role) exactly as before.
 
-## Backend assumptions — please confirm/adjust
+## Google auth — how it's wired and what's still open
 
-1. **Response envelope**: every endpoint is assumed to return
-   `{ success, message, data: { ... } }`. `unwrap()` in `lib/auth-api.ts` and
-   `refreshAccessToken()` in `lib/api-client.ts` fall back to the raw body if `data` is
-   missing, so a flat response shape (`{ user, accessToken }` directly) also works without
-   changes.
-2. **`role` field on the user object** — must be one of `"admin" | "hospital" | "user"`.
-   This is the single field the entire access-control system relies on.
-3. **`POST /auth/login`** returns `{ user, accessToken }`.
-4. **`POST /auth/register`** returns `{ user, accessToken }` — i.e. the account is created
-   *and* logged in (unverified) in one step, since `/auth/verify` is called with a bearer
-   token and there's no email/userId field sent alongside the code. If your backend instead
-   requires a separate login after registering, tell me and I'll adjust `register()` to
-   redirect to `/login` with a "check your email" toast instead.
-5. **`POST /auth/verify`** body is `{ submittedCode }`, authenticated via the bearer token
-   from step 3/4, and returns the updated `{ user }` (with `isVerified: true` / a valid `role`).
-6. **`POST /auth/resend-code`** is also authenticated via the bearer token (no body needed).
-7. **`POST /auth/refresh-token`** ideally returns `{ accessToken, user }`. There's no
-   `GET /auth/me` in the provided endpoint list, so `user` is only restored on page reload
-   if the refresh endpoint includes it. If it only returns `accessToken`, session restore on
-   reload will still refresh the token, but `user` (and therefore the role gate) won't be
-   populated until the next explicit login/verify — add a `/auth/me` endpoint if you want
-   this fixed properly.
-8. **CORS**: since cookies are used for the refresh token, your backend needs
-   `Access-Control-Allow-Credentials: true` and an explicit (non-`*`) `Access-Control-Allow-Origin`
-   matching your frontend's origin.
-9. There's no logout endpoint in the provided list, so `logout()` only clears local state —
-   the refresh-token cookie will keep working until it expires. Add a `POST /auth/logout`
-   that clears the cookie server-side if you want a true logout.
+- `GoogleAuthButton` does a **full browser redirect** to `NEXT_PUBLIC_GOOGLE_AUTH_URL`
+  (`http://localhost:5000/api/v1/auth/google` by default). It does not call Google or fake
+  any part of the exchange client-side — the backend owns the entire flow.
+- There's a `TODO(backend-google-oauth)` comment directly in
+  `components/auth/GoogleAuthButton.tsx` marking where callback handling should be added if
+  needed.
+- **Backend assumption**: after Google auth completes, the backend must set its usual
+  HttpOnly refresh-token cookie and then **redirect the browser back into this app**
+  (e.g. to `${FRONTEND_URL}/dashboard` on success, `${FRONTEND_URL}/login?error=...` on
+  failure). As long as it lands on any page in this app, `ReduxProvider`'s session bootstrap
+  will call `POST /auth/refresh-token` automatically and populate Redux — **no dedicated
+  `/auth/google/callback` page should be necessary** with this design.
+- If your backend instead appends `accessToken`/`user` as query params on the redirect
+  (rather than only using the cookie), that needs a small callback route added to read them
+  and `dispatch(setCredentials(...))` — flag this to me and I'll add it.
+- Same role gate applies to Google sign-ins as password sign-ins: whatever role comes back
+  from the session-restore, `useRequireAuth` / the login-page redirect check still enforce
+  `admin`/`hospital` only. Per your decision, a Google sign-in that doesn't match an existing
+  hospital/admin account should be **rejected by the backend** (not auto-created) — make sure
+  `/auth/google` implements that on its end, since the frontend has no way to intervene
+  mid-redirect.
 
-## Things you'll likely want next
+## Backend assumptions carried over / updated
 
-- A `GET /auth/me` (or equivalent) endpoint, per point 7 above.
-- A `POST /auth/logout` endpoint, per point 9 above.
-- Wire the dashboard's stat cards (`app/dashboard/page.tsx`) up to real endpoints once you
-  build the blood-request/donor APIs.
+1. **Response envelope**: `{ success, message, data: {...} }`, with a fallback to a flat
+   body if `data` is absent (`lib/auth.ts`'s `unwrap()`, `lib/api.ts`'s refresh handler).
+2. **`role` field on the user object** is required and must be one of
+   `"admin" | "hospital" | "user"` — the whole access-control system depends on it, for both
+   password and Google sign-ins.
+3. **`POST /auth/login`** → `{ user, accessToken }`.
+4. **`POST /auth/register-hospital`** → `{ user, accessToken }` (issues a token immediately
+   since `/auth/verify` is called with a bearer token, no email/userId in the body).
+5. **`POST /auth/verify`** body `{ submittedCode }`, bearer-authenticated, returns
+   `{ user }`.
+6. **`POST /auth/resend-code`** bearer-authenticated, no body needed.
+7. **`POST /auth/refresh-token`** ideally returns `{ accessToken, user }` — there's still no
+   `GET /auth/me` in the endpoint list, so `user` is only restored on reload/OAuth-return if
+   this endpoint includes it.
+8. **CORS**: `Access-Control-Allow-Credentials: true` + an explicit non-`*` origin, required
+   for the refresh-token cookie to work across requests.
+9. **No logout endpoint** provided — `logout()` only clears Redux state client-side; the
+   refresh-token cookie keeps working until it expires unless you add `POST /auth/logout`.
