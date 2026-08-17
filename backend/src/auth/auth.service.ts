@@ -169,3 +169,16 @@ export const findOrCreateUser = async (profile: googleUserProfile) => {
 
   return user;
 };
+
+// updateing is_deleted field when user requests to delete his account
+export const updateIs_deleted = async (userId: string) => {
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      active: false,
+      is_deleted: true,
+    },
+  });
+};
