@@ -1,12 +1,116 @@
 "use client";
 
-import { useContext } from "react";
-import { AuthContext } from "@/providers/auth-provider";
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  setCredentials,
+  setUser,
+  logout as logoutAction,
+  setAccessToken,
+} from "@/store/features/authSlice";
+import {
+  loginRequest,
+  registerHospitalRequest,
+  verifyRequest,
+  resendCodeRequest,
+  type RegisterHospitalPayload,
+  googleOauth,
+} from "@/lib/auth";
+import { isAllowedRole } from "@/lib/role-guard";
 
+/**
+ * Same public shape as the old Context-based useAuth() hook, so pages and
+ * components (Sidebar, dashboard pages, verify-email, etc.) don't need to
+ * change — only the internals moved from React Context to Redux Toolkit.
+ */
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used within an <AuthProvider>");
-  }
-  return ctx;
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { user, accessToken, isAuthenticated, status } = useAppSelector(
+    (state) => state.auth,
+  );
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const { user: loggedInUser, accessToken: token } = await loginRequest(
+        email,
+        password,
+      );
+
+      if (!isAllowedRole(loggedInUser.role)) {
+        dispatch(logoutAction());
+        toast.error(
+          "This account doesn't have access to the web dashboard. Please use the mobile app.",
+        );
+        router.push("/unauthorized");
+        throw new Error("ROLE_NOT_ALLOWED");
+      }
+
+      dispatch(setCredentials({ user: loggedInUser, accessToken: token }));
+      return loggedInUser;
+    },
+    [dispatch, router],
+  );
+
+  const register = useCallback(
+    async (payload: Omit<RegisterHospitalPayload, "role">) => {
+      const { user: newUser, accessToken: token } =
+        await registerHospitalRequest({
+          ...payload,
+          role: "hospital",
+        });
+      dispatch(setCredentials({ user: newUser, accessToken: token }));
+      return newUser;
+    },
+    [dispatch],
+  );
+
+  const verify = useCallback(
+    async (submittedCode: string) => {
+      const verifiedUser = await verifyRequest(submittedCode);
+      dispatch(setUser(verifiedUser));
+      return verifiedUser;
+    },
+    [dispatch],
+  );
+
+  const googleOAuth = useCallback(async () => {
+    const { user, accessToken } = await googleOauth();
+    dispatch(
+      setCredentials({
+        user: user,
+        accessToken: accessToken,
+      }),
+    );
+    return user;
+  }, [dispatch]);
+
+  const resendCode = useCallback(async () => {
+    await resendCodeRequest();
+  }, []);
+
+  const logout = useCallback(
+    (options?: { silent?: boolean }) => {
+      dispatch(logoutAction());
+      if (!options?.silent) {
+        router.push("/login");
+      }
+    },
+    [dispatch, router],
+  );
+
+  return {
+    user,
+    accessToken,
+    isAuthenticated,
+    isLoading: status === "idle" || status === "loading",
+    login,
+    register,
+    verify,
+    googleOAuth,
+    resendCode,
+    logout,
+  };
 }
