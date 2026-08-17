@@ -52,7 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  OauthAccount: 'OauthAccount'
+  OauthAccount: 'OauthAccount',
+  Hospital: 'Hospital'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -76,8 +77,11 @@ export const UserScalarFieldEnum = {
   display_name: 'display_name',
   email: 'email',
   avater: 'avater',
+  role: 'role',
   last_login_at: 'last_login_at',
   is_email_verified: 'is_email_verified',
+  active: 'active',
+  is_deleted: 'is_deleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -94,6 +98,22 @@ export const OauthAccountScalarFieldEnum = {
 } as const
 
 export type OauthAccountScalarFieldEnum = (typeof OauthAccountScalarFieldEnum)[keyof typeof OauthAccountScalarFieldEnum]
+
+
+export const HospitalScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  licenseNumber: 'licenseNumber',
+  phone: 'phone',
+  address: 'address',
+  city: 'city',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HospitalScalarFieldEnum = (typeof HospitalScalarFieldEnum)[keyof typeof HospitalScalarFieldEnum]
 
 
 export const SortOrder = {
