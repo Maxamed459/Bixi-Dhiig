@@ -57,8 +57,13 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await createNewUser(display_name, email, hashedPassword);
+    const role = "USER";
+    const newUser = await createNewUser(
+      display_name,
+      email,
+      role,
+      hashedPassword,
+    );
     const otpCode = await createOtp(newUser.id);
 
     await sendOtpEmail(newUser.email, otpCode);
@@ -149,8 +154,14 @@ export const registerHospital = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const role = "HOSPITAL";
 
-    const newUser = await createNewUser(display_name, email, hashedPassword);
+    const newUser = await createNewUser(
+      display_name,
+      email,
+      role,
+      hashedPassword,
+    );
     const otpCode = await createOtp(newUser.id);
 
     await sendOtpEmail(newUser.email, otpCode);
@@ -283,15 +294,13 @@ export const verifyEmail = async (req: Request, res: Response) => {
       });
     }
 
-    const update_isVerified_email = await update_is_email_verified(user.id);
+    const verifiedUser = await update_is_email_verified(user.id);
 
-    await sendWelcomeEmail(
-      update_isVerified_email.email,
-      update_isVerified_email.display_name,
-    );
+    await sendWelcomeEmail(verifiedUser.email, verifiedUser.display_name);
 
     return res.status(200).json({
       success: true,
+      data: verifiedUser,
       message: "email verified successful.",
     });
   } catch (error) {
