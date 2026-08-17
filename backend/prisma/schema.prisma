@@ -12,23 +12,31 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  USER
+  ADMIN
+  HOSPITAL
+}
+
 model User {
   id                String         @id @default(uuid()) @db.Uuid
   display_name      String
   email             String         @unique
   avater            String?
+  role              Role     @default(USER)
   last_login_at     DateTime?
   is_email_verified Boolean
+  active            Boolean  @default(true)
+  is_deleted        Boolean  @default(false)
   createdAt         DateTime @default(now())  
   updatedAt         DateTime @updatedAt
   oauthAccounts     OauthAccount[]
+  hospital          Hospital?
 }
 
 enum AuthProvider {
   PASSWORD
   GOOGLE
-  GITHUB
-  APPLE
 }
 
 model OauthAccount {
@@ -41,4 +49,22 @@ model OauthAccount {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerUserId])
+}
+
+model Hospital {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @unique @db.Uuid
+
+  name          String
+  licenseNumber String?  @unique
+  phone         String?
+  address       String?
+  city          String?
+
+  active        Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id])
 }
