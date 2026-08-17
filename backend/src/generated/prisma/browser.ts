@@ -27,3 +27,8 @@ export type User = Prisma.UserModel
  * 
  */
 export type OauthAccount = Prisma.OauthAccountModel
+/**
+ * Model Hospital
+ * 
+ */
+export type Hospital = Prisma.HospitalModel

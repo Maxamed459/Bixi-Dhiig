@@ -9,11 +9,18 @@
 * 🟢 You can import this file directly.
 */
 
+export const Role = {
+  USER: 'USER',
+  ADMIN: 'ADMIN',
+  HOSPITAL: 'HOSPITAL'
+} as const
+
+export type Role = (typeof Role)[keyof typeof Role]
+
+
 export const AuthProvider = {
   PASSWORD: 'PASSWORD',
-  GOOGLE: 'GOOGLE',
-  GITHUB: 'GITHUB',
-  APPLE: 'APPLE'
+  GOOGLE: 'GOOGLE'
 } as const
 
 export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]

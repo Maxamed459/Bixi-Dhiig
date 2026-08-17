@@ -10,4 +10,5 @@
  */
 export type * from './models/User.js'
 export type * from './models/OauthAccount.js'
+export type * from './models/Hospital.js'
 export type * from './commonInputTypes.js'

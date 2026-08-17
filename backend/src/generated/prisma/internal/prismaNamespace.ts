@@ -398,7 +398,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  OauthAccount: 'OauthAccount'
+  OauthAccount: 'OauthAccount',
+  Hospital: 'Hospital'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "oauthAccount"
+    modelProps: "user" | "oauthAccount" | "hospital"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -566,6 +567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Hospital: {
+      payload: Prisma.$HospitalPayload<ExtArgs>
+      fields: Prisma.HospitalFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HospitalFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HospitalFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>
+        }
+        findFirst: {
+          args: Prisma.HospitalFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HospitalFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>
+        }
+        findMany: {
+          args: Prisma.HospitalFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>[]
+        }
+        create: {
+          args: Prisma.HospitalCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>
+        }
+        createMany: {
+          args: Prisma.HospitalCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HospitalCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>[]
+        }
+        delete: {
+          args: Prisma.HospitalDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>
+        }
+        update: {
+          args: Prisma.HospitalUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>
+        }
+        deleteMany: {
+          args: Prisma.HospitalDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HospitalUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HospitalUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>[]
+        }
+        upsert: {
+          args: Prisma.HospitalUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HospitalPayload>
+        }
+        aggregate: {
+          args: Prisma.HospitalAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHospital>
+        }
+        groupBy: {
+          args: Prisma.HospitalGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HospitalGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HospitalCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HospitalCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -610,8 +685,11 @@ export const UserScalarFieldEnum = {
   display_name: 'display_name',
   email: 'email',
   avater: 'avater',
+  role: 'role',
   last_login_at: 'last_login_at',
   is_email_verified: 'is_email_verified',
+  active: 'active',
+  is_deleted: 'is_deleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -628,6 +706,22 @@ export const OauthAccountScalarFieldEnum = {
 } as const
 
 export type OauthAccountScalarFieldEnum = (typeof OauthAccountScalarFieldEnum)[keyof typeof OauthAccountScalarFieldEnum]
+
+
+export const HospitalScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  licenseNumber: 'licenseNumber',
+  phone: 'phone',
+  address: 'address',
+  city: 'city',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HospitalScalarFieldEnum = (typeof HospitalScalarFieldEnum)[keyof typeof HospitalScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -671,6 +765,20 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'String[]'
  */
 export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Role'
+ */
+export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>
+    
+
+
+/**
+ * Reference to a field of type 'Role[]'
+ */
+export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>
     
 
 
@@ -875,6 +983,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   oauthAccount?: Prisma.OauthAccountOmit
+  hospital?: Prisma.HospitalOmit
 }
 
 /* Types for Logging */
