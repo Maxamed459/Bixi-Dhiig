@@ -29,8 +29,11 @@ export type UserMinAggregateOutputType = {
   display_name: string | null
   email: string | null
   avater: string | null
+  role: $Enums.Role | null
   last_login_at: Date | null
   is_email_verified: boolean | null
+  active: boolean | null
+  is_deleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,8 +43,11 @@ export type UserMaxAggregateOutputType = {
   display_name: string | null
   email: string | null
   avater: string | null
+  role: $Enums.Role | null
   last_login_at: Date | null
   is_email_verified: boolean | null
+  active: boolean | null
+  is_deleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -51,8 +57,11 @@ export type UserCountAggregateOutputType = {
   display_name: number
   email: number
   avater: number
+  role: number
   last_login_at: number
   is_email_verified: number
+  active: number
+  is_deleted: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -64,8 +73,11 @@ export type UserMinAggregateInputType = {
   display_name?: true
   email?: true
   avater?: true
+  role?: true
   last_login_at?: true
   is_email_verified?: true
+  active?: true
+  is_deleted?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -75,8 +87,11 @@ export type UserMaxAggregateInputType = {
   display_name?: true
   email?: true
   avater?: true
+  role?: true
   last_login_at?: true
   is_email_verified?: true
+  active?: true
+  is_deleted?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -86,8 +101,11 @@ export type UserCountAggregateInputType = {
   display_name?: true
   email?: true
   avater?: true
+  role?: true
   last_login_at?: true
   is_email_verified?: true
+  active?: true
+  is_deleted?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -170,8 +188,11 @@ export type UserGroupByOutputType = {
   display_name: string
   email: string
   avater: string | null
+  role: $Enums.Role
   last_login_at: Date | null
   is_email_verified: boolean
+  active: boolean
+  is_deleted: boolean
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -202,11 +223,15 @@ export type UserWhereInput = {
   display_name?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   avater?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   last_login_at?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   is_email_verified?: Prisma.BoolFilter<"User"> | boolean
+  active?: Prisma.BoolFilter<"User"> | boolean
+  is_deleted?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   oauthAccounts?: Prisma.OauthAccountListRelationFilter
+  hospital?: Prisma.XOR<Prisma.HospitalNullableScalarRelationFilter, Prisma.HospitalWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
@@ -214,11 +239,15 @@ export type UserOrderByWithRelationInput = {
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   avater?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
+  active?: Prisma.SortOrder
+  is_deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   oauthAccounts?: Prisma.OauthAccountOrderByRelationAggregateInput
+  hospital?: Prisma.HospitalOrderByWithRelationInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -229,11 +258,15 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   display_name?: Prisma.StringFilter<"User"> | string
   avater?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   last_login_at?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   is_email_verified?: Prisma.BoolFilter<"User"> | boolean
+  active?: Prisma.BoolFilter<"User"> | boolean
+  is_deleted?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   oauthAccounts?: Prisma.OauthAccountListRelationFilter
+  hospital?: Prisma.XOR<Prisma.HospitalNullableScalarRelationFilter, Prisma.HospitalWhereInput> | null
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -241,8 +274,11 @@ export type UserOrderByWithAggregationInput = {
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   avater?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
+  active?: Prisma.SortOrder
+  is_deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -258,8 +294,11 @@ export type UserScalarWhereWithAggregatesInput = {
   display_name?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   avater?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   last_login_at?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   is_email_verified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  active?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  is_deleted?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -269,11 +308,15 @@ export type UserCreateInput = {
   display_name: string
   email: string
   avater?: string | null
+  role?: $Enums.Role
   last_login_at?: Date | string | null
   is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -281,11 +324,15 @@ export type UserUncheckedCreateInput = {
   display_name: string
   email: string
   avater?: string | null
+  role?: $Enums.Role
   last_login_at?: Date | string | null
   is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -293,11 +340,15 @@ export type UserUpdateInput = {
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -305,11 +356,15 @@ export type UserUncheckedUpdateInput = {
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -317,8 +372,11 @@ export type UserCreateManyInput = {
   display_name: string
   email: string
   avater?: string | null
+  role?: $Enums.Role
   last_login_at?: Date | string | null
   is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -328,8 +386,11 @@ export type UserUpdateManyMutationInput = {
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -339,8 +400,11 @@ export type UserUncheckedUpdateManyInput = {
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -350,8 +414,11 @@ export type UserCountOrderByAggregateInput = {
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   avater?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
+  active?: Prisma.SortOrder
+  is_deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -361,8 +428,11 @@ export type UserMaxOrderByAggregateInput = {
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   avater?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
+  active?: Prisma.SortOrder
+  is_deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -372,8 +442,11 @@ export type UserMinOrderByAggregateInput = {
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   avater?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
+  active?: Prisma.SortOrder
+  is_deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -389,6 +462,10 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type EnumRoleFieldUpdateOperationsInput = {
+  set?: $Enums.Role
 }
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -417,15 +494,33 @@ export type UserUpdateOneRequiredWithoutOauthAccountsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOauthAccountsInput, Prisma.UserUpdateWithoutOauthAccountsInput>, Prisma.UserUncheckedUpdateWithoutOauthAccountsInput>
 }
 
+export type UserCreateNestedOneWithoutHospitalInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHospitalInput, Prisma.UserUncheckedCreateWithoutHospitalInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHospitalInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutHospitalNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutHospitalInput, Prisma.UserUncheckedCreateWithoutHospitalInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHospitalInput
+  upsert?: Prisma.UserUpsertWithoutHospitalInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHospitalInput, Prisma.UserUpdateWithoutHospitalInput>, Prisma.UserUncheckedUpdateWithoutHospitalInput>
+}
+
 export type UserCreateWithoutOauthAccountsInput = {
   id?: string
   display_name: string
   email: string
   avater?: string | null
+  role?: $Enums.Role
   last_login_at?: Date | string | null
   is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOauthAccountsInput = {
@@ -433,10 +528,14 @@ export type UserUncheckedCreateWithoutOauthAccountsInput = {
   display_name: string
   email: string
   avater?: string | null
+  role?: $Enums.Role
   last_login_at?: Date | string | null
   is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOauthAccountsInput = {
@@ -460,10 +559,14 @@ export type UserUpdateWithoutOauthAccountsInput = {
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOauthAccountsInput = {
@@ -471,10 +574,90 @@ export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutHospitalInput = {
+  id?: string
+  display_name: string
+  email: string
+  avater?: string | null
+  role?: $Enums.Role
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutHospitalInput = {
+  id?: string
+  display_name: string
+  email: string
+  avater?: string | null
+  role?: $Enums.Role
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutHospitalInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutHospitalInput, Prisma.UserUncheckedCreateWithoutHospitalInput>
+}
+
+export type UserUpsertWithoutHospitalInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutHospitalInput, Prisma.UserUncheckedUpdateWithoutHospitalInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutHospitalInput, Prisma.UserUncheckedCreateWithoutHospitalInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutHospitalInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutHospitalInput, Prisma.UserUncheckedUpdateWithoutHospitalInput>
+}
+
+export type UserUpdateWithoutHospitalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutHospitalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -513,11 +696,15 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   display_name?: boolean
   email?: boolean
   avater?: boolean
+  role?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   oauthAccounts?: boolean | Prisma.User$oauthAccountsArgs<ExtArgs>
+  hospital?: boolean | Prisma.User$hospitalArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -526,8 +713,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   display_name?: boolean
   email?: boolean
   avater?: boolean
+  role?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -537,8 +727,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   display_name?: boolean
   email?: boolean
   avater?: boolean
+  role?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -548,15 +741,19 @@ export type UserSelectScalar = {
   display_name?: boolean
   email?: boolean
   avater?: boolean
+  role?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
+  active?: boolean
+  is_deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "display_name" | "email" | "avater" | "last_login_at" | "is_email_verified" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "display_name" | "email" | "avater" | "role" | "last_login_at" | "is_email_verified" | "active" | "is_deleted" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   oauthAccounts?: boolean | Prisma.User$oauthAccountsArgs<ExtArgs>
+  hospital?: boolean | Prisma.User$hospitalArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -566,14 +763,18 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     oauthAccounts: Prisma.$OauthAccountPayload<ExtArgs>[]
+    hospital: Prisma.$HospitalPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     display_name: string
     email: string
     avater: string | null
+    role: $Enums.Role
     last_login_at: Date | null
     is_email_verified: boolean
+    active: boolean
+    is_deleted: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -971,6 +1172,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   oauthAccounts<T extends Prisma.User$oauthAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$oauthAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OauthAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  hospital<T extends Prisma.User$hospitalArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hospitalArgs<ExtArgs>>): Prisma.Prisma__HospitalClient<runtime.Types.Result.GetResult<Prisma.$HospitalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1004,8 +1206,11 @@ export interface UserFieldRefs {
   readonly display_name: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly avater: Prisma.FieldRef<"User", 'String'>
+  readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly last_login_at: Prisma.FieldRef<"User", 'DateTime'>
   readonly is_email_verified: Prisma.FieldRef<"User", 'Boolean'>
+  readonly active: Prisma.FieldRef<"User", 'Boolean'>
+  readonly is_deleted: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -1422,6 +1627,25 @@ export type User$oauthAccountsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.OauthAccountScalarFieldEnum | Prisma.OauthAccountScalarFieldEnum[]
+}
+
+/**
+ * User.hospital
+ */
+export type User$hospitalArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Hospital
+   */
+  select?: Prisma.HospitalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Hospital
+   */
+  omit?: Prisma.HospitalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HospitalInclude<ExtArgs> | null
+  where?: Prisma.HospitalWhereInput
 }
 
 /**
