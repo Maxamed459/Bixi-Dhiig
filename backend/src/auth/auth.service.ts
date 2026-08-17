@@ -1,6 +1,7 @@
 import { email } from "zod";
 import { AppError } from "../lib/appError.js";
 import { prisma } from "../lib/prisma.js";
+import { Role } from "../generated/prisma/enums.js";
 
 interface googleUserProfile {
   providerUserId: string;
@@ -35,6 +36,7 @@ export const findUserByIdWithHashPassword = async (userId: string) => {
 export const createNewUser = async (
   display_name: string,
   email: string,
+  role: Role,
   hashedPassword: string,
 ) => {
   try {
@@ -43,6 +45,7 @@ export const createNewUser = async (
         data: {
           display_name: display_name,
           email: email,
+          role: role,
           is_email_verified: false,
         },
       });
@@ -159,7 +162,7 @@ export const findOrCreateUser = async (profile: googleUserProfile) => {
   });
 
   if (!user) {
-    await createGoogleAuthUser(
+    user = await createGoogleAuthUser(
       profile.name,
       profile.email,
       profile.picture,
