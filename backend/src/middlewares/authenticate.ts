@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../lib/jwt.js";
 import { prisma } from "../lib/prisma.js";
+import { verifyJwtToken } from "../lib/jwt.js";
+import { JWT_ACCESS_SECRET } from "../config/dotenv.js";
 
 declare global {
   namespace Express {
@@ -27,7 +28,11 @@ export const authenticate = async (
 
     const token = authorization.split(" ")[1];
 
-    const payload = await verifyAccessToken(token);
+    if (!JWT_ACCESS_SECRET) {
+      throw new Error("JWT_ACCESS_SECRET is not available please provide it");
+    }
+
+    const payload = await verifyJwtToken(token, JWT_ACCESS_SECRET);
 
     const userId = payload.sub as string;
 
