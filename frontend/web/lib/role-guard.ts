@@ -4,7 +4,7 @@ import type { UserRole } from "./types";
  * Only admin and hospital accounts may use the web dashboard.
  * Regular `user` accounts are mobile-app only.
  */
-export const DASHBOARD_ROLES: UserRole[] = ["admin", "hospital"];
+export const DASHBOARD_ROLES: UserRole[] = ["ADMIN", "HOSPITAL"];
 
 export function isAllowedRole(
   role: UserRole | undefined | null,

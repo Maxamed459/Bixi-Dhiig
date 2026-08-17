@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "hospital" | "user";
+export type UserRole = "ADMIN" | "HOSPITAL" | "USER";
 
 export interface User {
   id: string;
@@ -18,8 +18,8 @@ export interface AuthPayload {
 /**
  * Assumption: the backend wraps every response in an envelope shaped like:
  * { success: boolean, message: string, data: T }
- * If your API returns the payload directly (no `data` wrapper), `unwrapResponse`
- * in lib/auth-api.ts already falls back to the raw body, so nothing else needs
+ * If your API returns the payload directly (no `data` wrapper), `unwrap()`
+ * in lib/auth.ts already falls back to the raw body, so nothing else needs
  * to change.
  */
 export interface ApiEnvelope<T> {
