@@ -7,6 +7,7 @@ import {
   findUserById,
   findUserByIdWithHashPassword,
   update_is_email_verified,
+  updateIs_deleted,
   updateLastLogin,
   updatePassowrd,
 } from "./auth.service.js";
@@ -19,15 +20,12 @@ import {
   verifyOtp,
 } from "../services/mail/otp.service.js";
 import { sendWelcomeEmail } from "../services/mail/welcome.service.js";
-import {
-  createAccessToken,
-  createRefreshToken,
-  verifyRefreshToken,
-} from "../lib/jwt.js";
+import { generateJwtToken, verifyJwtToken } from "../lib/jwt.js";
 import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   GOOGLE_OAUTH_REDIRECT_URI,
+  JWT_ACCESS_SECRET,
   JWT_REFRESH_SECRET,
   NODE_ENV,
 } from "../config/dotenv.js";
@@ -40,12 +38,14 @@ import {
 import { getRedisClient } from "../lib/redis.js";
 import { google } from "googleapis";
 import crypto from "crypto";
-import { string } from "zod";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
-export const register = async (req: Request, res: Response) => {
+// register handler
+export const registerUser = async (req: Request, res: Response) => {
   const { display_name, email, password } = req.body;
+  const clientType =
+    req.headers["x-client-type"] === "mobile" ? "MOBILE" : "WEB";
   try {
     const isUserExists = await findUserByEmail(email);
 
@@ -63,8 +63,28 @@ export const register = async (req: Request, res: Response) => {
 
     await sendOtpEmail(newUser.email, otpCode);
 
-    const accessToken = await createAccessToken(newUser.id);
-    const refreshToken = await createRefreshToken(newUser.id);
+    if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
+      throw new Error("JWT_SECRETS is not available please provide it");
+    }
+    const accessToken = await generateJwtToken(
+      {
+        sub: newUser.id,
+        role: "USER",
+        type: "access",
+      },
+      JWT_ACCESS_SECRET!,
+      "15m",
+    );
+
+    const refreshToken = await generateJwtToken(
+      {
+        sub: newUser.id,
+        role: "USER",
+        type: "refresh",
+      },
+      JWT_REFRESH_SECRET!,
+      "15m",
+    );
 
     const client = getRedisClient();
 
@@ -76,22 +96,126 @@ export const register = async (req: Request, res: Response) => {
 
     const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: SEVEN_DAYS_MS,
-    });
+    if (clientType === "WEB") {
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: SEVEN_DAYS_MS,
+      });
 
-    return res.status(201).json({
-      success: true,
-      data: {
-        user: newUser,
-        accessToken,
-      },
-      message: "user created successfully",
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: newUser,
+          accessToken,
+        },
+        message: "user created successfully",
+      });
+    } else {
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: newUser,
+          accessToken,
+          refreshToken,
+        },
+        message: "user created successfully",
+      });
+    }
+  } catch (error) {
+    logger.info("Here", error);
+    return res.status(500).json({
+      success: false,
+      message: error,
     });
+  }
+};
+
+// register handler
+export const registerHospital = async (req: Request, res: Response) => {
+  const { display_name, email, password } = req.body;
+  const clientType =
+    req.headers["x-client-type"] === "mobile" ? "MOBILE" : "WEB";
+  try {
+    const isUserExists = await findUserByEmail(email);
+
+    if (isUserExists) {
+      return res.status(400).json({
+        success: false,
+        message: "this email already exists please login.",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await createNewUser(display_name, email, hashedPassword);
+    const otpCode = await createOtp(newUser.id);
+
+    await sendOtpEmail(newUser.email, otpCode);
+
+    if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
+      throw new Error("JWT_SECRETS is not available please provide it");
+    }
+    const accessToken = await generateJwtToken(
+      {
+        sub: newUser.id,
+        role: "HOSPITAL",
+        type: "access",
+      },
+      JWT_ACCESS_SECRET!,
+      "15m",
+    );
+
+    const refreshToken = await generateJwtToken(
+      {
+        sub: newUser.id,
+        role: "HOSPITAL",
+        type: "refresh",
+      },
+      JWT_REFRESH_SECRET!,
+      "15m",
+    );
+
+    const client = getRedisClient();
+
+    const rediskey = `refresh:${newUser.id}`;
+
+    await client.del(rediskey);
+
+    await rotateRefreshToken(newUser.id);
+
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+    if (clientType === "WEB") {
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: SEVEN_DAYS_MS,
+      });
+
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: newUser,
+          accessToken,
+        },
+        message: "user created successfully",
+      });
+    } else {
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: newUser,
+          accessToken,
+          refreshToken,
+        },
+        message: "user created successfully",
+      });
+    }
   } catch (error) {
     logger.info("Here", error);
     return res.status(500).json({
@@ -182,6 +306,8 @@ export const verifyEmail = async (req: Request, res: Response) => {
 // login handler
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  const clientType =
+    req.headers["x-client-type"] === "mobile" ? "MOBILE" : "WEB";
   try {
     const user = await findUserByEmail(email);
 
@@ -203,10 +329,30 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    const updatedUser = await updateLastLogin(user.email);
+    await updateLastLogin(user.email);
 
-    const accessToken = await createAccessToken(user.id);
-    const refreshToken = await createRefreshToken(user.id);
+    if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
+      throw new Error("JWT_SECRETS is not available please provide it");
+    }
+    const accessToken = await generateJwtToken(
+      {
+        sub: user.id,
+        role: user.role,
+        type: "access",
+      },
+      JWT_ACCESS_SECRET!,
+      "15m",
+    );
+
+    const refreshToken = await generateJwtToken(
+      {
+        sub: user.id,
+        role: user.role,
+        type: "refresh",
+      },
+      JWT_REFRESH_SECRET!,
+      "15m",
+    );
 
     const client = getRedisClient();
 
@@ -215,22 +361,34 @@ export const login = async (req: Request, res: Response) => {
 
     await rotateRefreshToken(user.id);
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: SEVEN_DAYS_MS,
-    });
+    if (clientType === "WEB") {
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: SEVEN_DAYS_MS,
+      });
 
-    return res.status(201).json({
-      success: true,
-      data: {
-        user: updatedUser,
-        accessToken,
-      },
-      message: "user created successfully",
-    });
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: user,
+          accessToken,
+        },
+        message: "user created successfully",
+      });
+    } else {
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: user,
+          accessToken,
+          refreshToken,
+        },
+        message: "user created successfully",
+      });
+    }
   } catch (error) {
     logger.info(error);
     return res.status(500).json({
@@ -242,7 +400,7 @@ export const login = async (req: Request, res: Response) => {
 
 // refreshToken handler
 export const createNewAccessToken = async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.cookies?.refreshToken ?? req.body.refreshToken;
   if (!refreshToken) {
     return res.status(401).json({
       success: false,
@@ -254,7 +412,7 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
       throw new AppError(500, "JWT refresh configuration is missing");
     }
 
-    const decoded = await verifyRefreshToken(refreshToken);
+    const decoded = await verifyJwtToken(refreshToken, JWT_REFRESH_SECRET);
 
     if (decoded.type !== "refresh") {
       return res.status(401).json({
@@ -288,7 +446,19 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
 
     await client.del(rediskey);
 
-    const newRefreshToken = await createRefreshToken(user.id);
+    if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
+      throw new Error("JWT_SECRETS is not available please provide it");
+    }
+
+    const newRefreshToken = await generateJwtToken(
+      {
+        sub: user.id,
+        role: "USER",
+        type: "refresh",
+      },
+      JWT_REFRESH_SECRET!,
+      "15m",
+    );
 
     await rotateRefreshToken(user.id);
 
@@ -300,12 +470,20 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
       maxAge: SEVEN_DAYS_MS,
     });
 
-    const newAccessToken = await createAccessToken(user.id);
+    const accessToken = await generateJwtToken(
+      {
+        sub: user.id,
+        role: "USER",
+        type: "access",
+      },
+      JWT_ACCESS_SECRET!,
+      "15m",
+    );
 
     return res.status(201).json({
       success: true,
       data: {
-        accessToken: newAccessToken,
+        accessToken: accessToken,
       },
       message: "accessToken created successfully!",
     });
@@ -403,6 +581,25 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
+// delete account
+export const deleteAccount = async (req: Request, res: Response) => {
+  const user = req.user;
+  try {
+    await updateIs_deleted(user.id);
+
+    return res.status(200).json({
+      success: true,
+      message: "your account deleted successfully.",
+    });
+  } catch (error) {
+    logger.info(error);
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
 // google auth
 
 const oAuth2Client = new google.auth.OAuth2(
@@ -424,10 +621,7 @@ export const googleOauth = (_req: Request, res: Response) => {
   const url = oAuth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
-    scope: [
-      "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.googleapis.com/auth/userinfo.profile",
-    ],
+    scope: ["openid", "email", "profile"],
     state,
   });
 
@@ -476,8 +670,28 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
       picture: profile.picture!,
     });
 
-    const accessToken = await createAccessToken(user!.id);
-    const refreshToken = await createRefreshToken(user!.id);
+    if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
+      throw new Error("JWT_SECRETS is not available please provide it");
+    }
+    const accessToken = await generateJwtToken(
+      {
+        sub: user!.id,
+        role: "USER",
+        type: "access",
+      },
+      JWT_ACCESS_SECRET!,
+      "15m",
+    );
+
+    const refreshToken = await generateJwtToken(
+      {
+        sub: user!.id,
+        role: "USER",
+        type: "refresh",
+      },
+      JWT_REFRESH_SECRET!,
+      "15m",
+    );
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -497,5 +711,11 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
       },
       message: "user created successfully",
     });
-  } catch (error) {}
+  } catch (error) {
+    logger.info(error);
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
 };
