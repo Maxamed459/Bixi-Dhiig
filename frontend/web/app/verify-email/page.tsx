@@ -68,7 +68,9 @@ export default function VerifyEmailPage() {
         router.push("/unauthorized");
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, "Invalid or expired code. Please try again."));
+      toast.error(
+        getErrorMessage(error, "Invalid or expired code. Please try again."),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -81,7 +83,12 @@ export default function VerifyEmailPage() {
       toast.success("A new verification code has been sent to your email.");
       setCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Unable to resend the code. Please try again shortly."));
+      toast.error(
+        getErrorMessage(
+          error,
+          "Unable to resend the code. Please try again shortly.",
+        ),
+      );
     } finally {
       setIsResending(false);
     }
@@ -103,7 +110,11 @@ export default function VerifyEmailPage() {
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
-            <FormFieldWrapper label="Verification code" htmlFor="submittedCode" error={errors.submittedCode?.message}>
+            <FormFieldWrapper
+              label="Verification code"
+              htmlFor="submittedCode"
+              error={errors.submittedCode?.message}
+            >
               <Input
                 id="submittedCode"
                 inputMode="numeric"
@@ -125,7 +136,11 @@ export default function VerifyEmailPage() {
               disabled={isResending || cooldown > 0}
               onClick={handleResend}
             >
-              {cooldown > 0 ? `Resend code in ${cooldown}s` : isResending ? "Sending..." : "Resend code"}
+              {cooldown > 0
+                ? `Resend code in ${cooldown}s`
+                : isResending
+                  ? "Sending..."
+                  : "Resend code"}
             </Button>
           </CardFooter>
         </form>
