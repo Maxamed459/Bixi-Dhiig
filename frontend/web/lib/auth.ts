@@ -38,13 +38,15 @@ export async function resendCodeRequest(): Promise<{ message?: string }> {
   return unwrap<{ message?: string }>(res.data);
 }
 
+export async function logoutRequest(): Promise<{ message?: string }> {
+  const res = await apiClient.post("/auth/logout");
+  return unwrap<{ message?: string }>(res.data);
+}
+
 export async function googleOauth(): Promise<{
   user: User;
   accessToken: string;
-  refreshToken: string;
 }> {
   const res = await apiClient.get("/auth/google");
-  return unwrap<{ user: User; accessToken: string; refreshToken: string }>(
-    res.data.data,
-  );
+  return unwrap<{ user: User; accessToken: string }>(res.data.data);
 }
