@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "@/lib/types";
+import { loadPersistedAuthState } from "@/lib/auth-storage";
 
 export type AuthStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -10,11 +11,15 @@ export interface AuthState {
   status: AuthStatus;
 }
 
+const persistedAuthState = loadPersistedAuthState();
+
 const initialState: AuthState = {
-  user: null,
-  accessToken: null,
-  isAuthenticated: false,
-  status: "idle",
+  user: persistedAuthState.user,
+  accessToken: persistedAuthState.accessToken,
+  isAuthenticated: Boolean(
+    persistedAuthState.user && persistedAuthState.accessToken,
+  ),
+  status: persistedAuthState.accessToken ? "succeeded" : "idle",
 };
 
 const authSlice = createSlice({
