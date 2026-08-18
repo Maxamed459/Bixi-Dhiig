@@ -80,6 +80,7 @@ const createGoogleAuthUser = async (
           display_name: display_name,
           email: email,
           avater: picture,
+          role: "HOSPITAL",
           is_email_verified: true,
         },
       });
@@ -155,6 +156,7 @@ export const updatePassowrd = async (
 
 // find or create user - google oauth
 export const findOrCreateUser = async (profile: googleUserProfile) => {
+  let isUserNew: boolean = false;
   let user = await prisma.user.findUnique({
     where: {
       email: profile.email,
@@ -165,12 +167,13 @@ export const findOrCreateUser = async (profile: googleUserProfile) => {
     user = await createGoogleAuthUser(
       profile.name,
       profile.email,
-      profile.picture,
       profile.providerUserId,
+      profile.picture,
     );
+    isUserNew = true;
   }
 
-  return user;
+  return { user, isUserNew };
 };
 
 // updateing is_deleted field when user requests to delete his account
