@@ -8,17 +8,18 @@ import {
   setCredentials,
   setUser,
   logout as logoutAction,
-  setAccessToken,
 } from "@/store/features/authSlice";
 import {
   loginRequest,
   registerHospitalRequest,
   verifyRequest,
   resendCodeRequest,
+  logoutRequest,
   type RegisterHospitalPayload,
   googleOauth,
 } from "@/lib/auth";
 import { isAllowedRole } from "@/lib/role-guard";
+import { getErrorMessage } from "@/lib/get-error-message";
 
 /**
  * Same public shape as the old Context-based useAuth() hook, so pages and
@@ -92,13 +93,34 @@ export function useAuth() {
   }, []);
 
   const logout = useCallback(
-    (options?: { silent?: boolean }) => {
-      dispatch(logoutAction());
-      if (!options?.silent) {
-        router.push("/login");
+    async (options?: { silent?: boolean }) => {
+      let serverLogoutSucceeded = !accessToken;
+
+      try {
+        if (accessToken) {
+          await logoutRequest();
+          serverLogoutSucceeded = true;
+        }
+      } catch (error) {
+        if (!options?.silent) {
+          toast.error(
+            getErrorMessage(
+              error,
+              "Could not end the server session, but you were logged out locally.",
+            ),
+          );
+        }
+      } finally {
+        dispatch(logoutAction());
+        if (!options?.silent) {
+          if (serverLogoutSucceeded) {
+            toast.success("You've been logged out.");
+          }
+          router.push("/login");
+        }
       }
     },
-    [dispatch, router],
+    [accessToken, dispatch, router],
   );
 
   return {
