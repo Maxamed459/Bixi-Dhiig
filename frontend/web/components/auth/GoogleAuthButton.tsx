@@ -1,12 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { getErrorMessage } from "@/lib/get-error-message";
-import { isAllowedRole } from "@/lib/role-guard";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 const GOOGLE_AUTH_URL = process.env.NEXT_PUBLIC_GOOGLE_AUTH_URL;
 
@@ -35,29 +30,13 @@ export function GoogleAuthButton({
   label = "Continue with Google",
   className,
 }: GoogleAuthButtonProps) {
-  const { googleOAuth } = useAuth();
-  const router = useRouter();
-  const handleClick = async () => {
+  const handleClick = () => {
     if (!GOOGLE_AUTH_URL) {
       console.error("NEXT_PUBLIC_GOOGLE_AUTH_URL is not set.");
       return;
     }
-    const user = await googleOAuth();
 
-    try {
-      const user = await googleOAuth();
-      toast.success("Email verified successfully.");
-
-      if (isAllowedRole(user.role)) {
-        router.push("/dashboard");
-      } else {
-        router.push("/unauthorized");
-      }
-    } catch (error) {
-      toast.error(
-        getErrorMessage(error, "Invalid or expired code. Please try again."),
-      );
-    }
+    window.location.href = GOOGLE_AUTH_URL;
   };
 
   return (
@@ -66,7 +45,6 @@ export function GoogleAuthButton({
       variant="outline"
       className={cn("w-full gap-2 shadow-sm", className)}
       onClick={handleClick}
-      disabled={!GOOGLE_AUTH_URL}
     >
       <GoogleIcon className="h-6 w-6" />
       {label}
