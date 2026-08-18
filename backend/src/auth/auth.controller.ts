@@ -25,6 +25,7 @@ import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   GOOGLE_OAUTH_REDIRECT_URI,
+  FRONTEND_URL,
   JWT_ACCESS_SECRET,
   JWT_REFRESH_SECRET,
   NODE_ENV,
@@ -462,7 +463,7 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
     const newRefreshToken = await generateJwtToken(
       {
         sub: user.id,
-        role: "USER",
+        role: user.role,
         type: "refresh",
       },
       JWT_REFRESH_SECRET!,
@@ -482,7 +483,7 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
     const accessToken = await generateJwtToken(
       {
         sub: user.id,
-        role: "USER",
+        role: user.role,
         type: "access",
       },
       JWT_ACCESS_SECRET!,
@@ -493,6 +494,7 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
       success: true,
       data: {
         accessToken: accessToken,
+        user,
       },
       message: "accessToken created successfully!",
     });
@@ -617,6 +619,11 @@ const oAuth2Client = new google.auth.OAuth2(
   GOOGLE_OAUTH_REDIRECT_URI,
 );
 
+const redirectToFrontendLogin = (res: Response, error: string) => {
+  const frontendUrl = FRONTEND_URL || "http://localhost:3000";
+  return res.redirect(`${frontendUrl}/login?error=${error}`);
+};
+
 export const googleOauth = (_req: Request, res: Response) => {
   const state = crypto.randomBytes(32).toString("hex");
 
@@ -644,17 +651,11 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
   res.clearCookie("oauth_state");
 
   if (!state || state !== savedState) {
-    return res.status(403).json({
-      success: false,
-      message: "Invalid state",
-    });
+    return redirectToFrontendLogin(res, "google_state_mismatch");
   }
 
   if (!code || typeof code !== "string") {
-    return res.status(400).json({
-      success: false,
-      message: "Missing authorization code",
-    });
+    return redirectToFrontendLogin(res, "google_missing_code");
   }
 
   try {
@@ -665,14 +666,11 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
     const { data: profile } = await oauth2.userinfo.get();
 
     if (!profile.email || !profile.verified_email) {
-      return res.status(400).json({
-        success: false,
-        message: "Google account email not verified",
-      });
+      return redirectToFrontendLogin(res, "google_email_unverified");
     }
 
     // find or create the user
-    const user = await findOrCreateUser({
+    const { user, isUserNew } = await findOrCreateUser({
       providerUserId: profile.id!,
       email: profile.email,
       name: profile.name!,
@@ -682,25 +680,24 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
     if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
       throw new Error("JWT_SECRETS is not available please provide it");
     }
-    const accessToken = await generateJwtToken(
-      {
-        sub: user!.id,
-        role: "USER",
-        type: "access",
-      },
-      JWT_ACCESS_SECRET!,
-      "15m",
-    );
 
     const refreshToken = await generateJwtToken(
       {
         sub: user!.id,
-        role: "USER",
+        role: user!.role,
         type: "refresh",
       },
       JWT_REFRESH_SECRET!,
       "15m",
     );
+
+    const client = getRedisClient();
+
+    const rediskey = `refresh:${user.id}`;
+
+    await client.del(rediskey);
+
+    await rotateRefreshToken(user.id);
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -710,21 +707,14 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
       maxAge: SEVEN_DAYS_MS,
     });
 
-    await sendWelcomeEmail(user!.email, user!.display_name);
+    if (isUserNew) {
+      await sendWelcomeEmail(user!.email, user!.display_name);
+    }
 
-    return res.status(201).json({
-      success: true,
-      data: {
-        user: user,
-        accessToken,
-      },
-      message: "user created successfully",
-    });
+    const frontendUrl = FRONTEND_URL || "http://localhost:3000";
+    return res.redirect(`${frontendUrl}/login/callback`);
   } catch (error) {
     logger.info(error);
-    return res.status(500).json({
-      success: false,
-      message: error,
-    });
+    return redirectToFrontendLogin(res, "google_auth_failed");
   }
 };
