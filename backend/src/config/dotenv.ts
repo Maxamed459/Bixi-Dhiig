@@ -14,6 +14,7 @@ export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 export const GOOGLE_REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
 export const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 export const GOOGLE_OAUTH_REDIRECT_URI = process.env.GOOGLE_OAUTH_REDIRECT_URI;
+export const FRONTEND_URL = process.env.FRONTEND_URL;
 export const SENDER_EMAIL = process.env.SENDER_EMAIL;
 export const EMAIL_FROM = process.env.EMAIL_FROM;
 export const LOG_LEVEL = process.env.LOG_LEVEL;
