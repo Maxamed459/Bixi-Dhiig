@@ -5,6 +5,7 @@ export interface User {
   display_name: string;
   email: string;
   role: UserRole;
+  avater?: string;
   isVerified?: boolean;
   createdAt?: string;
   [key: string]: unknown;
