@@ -4,6 +4,7 @@ import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input, type InputProps } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/context";
 
 /**
  * Auth-page-only input variants. Both wrap the shared <Input /> primitive
@@ -39,6 +40,7 @@ interface PasswordInputProps extends Omit<InputProps, "type"> {
 export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ icon, className, ...props }, ref) => {
     const [visible, setVisible] = React.useState(false);
+    const t = useT();
 
     return (
       <div className="relative">
@@ -55,7 +57,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           type="button"
           tabIndex={-1}
           onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? "Hide password" : "Show password"}
+          aria-label={visible ? t("common.hidePassword") : t("common.showPassword")}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors hover:text-zinc-300"
         >
           {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

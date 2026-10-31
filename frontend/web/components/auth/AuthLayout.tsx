@@ -1,5 +1,9 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { Droplet, HeartPulse } from "lucide-react";
+import { useT } from "@/lib/i18n/context";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -12,6 +16,7 @@ interface AuthLayoutProps {
  * up.
  */
 export function AuthLayout({ children }: AuthLayoutProps) {
+  const t = useT();
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
       <div className="hidden lg:flex relative  flex-col justify-between overflow-hidden bg-linear-to-br from-red-600 via-red-700 to-red-800 px-8 py-10 text-white sm:px-12 lg:w-1/2 lg:px-16 lg:py-16">
@@ -24,30 +29,23 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             <Droplet className="h-5 w-5" />
           </div>
           <span className="text-lg font-semibold tracking-tight">
-            Bixi-Dhiig
+            {t("common.appName")}
           </span>
         </div>
 
         <div className="relative mt-10 max-w-md lg:mt-0">
           <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-            Every drop brings someone closer to another day with the people they
-            love.
+            {t("auth.brand.headline")}
           </h1>
           <p className="mt-4 text-base leading-relaxed text-red-50/90">
-            Bixi-Dhiig connects hospitals with willing donors so no request for
-            blood goes unanswered — turning a moment of need into a lifeline,
-            one donation at a time.
+            {t("auth.brand.body")}
           </p>
         </div>
 
         <div className="relative mt-10 flex items-start gap-2 rounded-lg bg-white/10 p-4 text-sm text-red-50/90 backdrop-blur-sm lg:mt-0">
           <HeartPulse className="mt-0.5 h-4 w-4 shrink-0" />
           <span>
-            This dashboard is reserved for verified{" "}
-            <strong className="font-semibold text-white">hospitals</strong> and{" "}
-            <strong className="font-semibold text-white">administrators</strong>
-            . Donors and blood requesters should use the Bixi-Dhiig mobile app
-            instead.
+            {t("auth.brand.notice")}
           </span>
         </div>
       </div>
@@ -65,6 +63,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
               "radial-gradient(ellipse 60% 55% at 50% 40%, black 0%, transparent 75%)",
           }}
         />
+        <div className="absolute right-4 top-4 z-10 sm:right-8 sm:top-6">
+          <LanguageSwitcher tone="dark" />
+        </div>
         <div className="relative w-full max-w-sm">{children}</div>
       </div>
     </div>
