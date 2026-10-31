@@ -6,6 +6,8 @@ export interface User {
   email: string;
   role: UserRole;
   avater?: string;
+  phone?: string | null;
+  city?: string | null;
   isVerified?: boolean;
   createdAt?: string;
   [key: string]: unknown;

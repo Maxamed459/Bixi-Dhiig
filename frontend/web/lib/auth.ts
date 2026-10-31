@@ -18,6 +18,9 @@ export interface RegisterHospitalPayload {
   display_name: string;
   email: string;
   password: string;
+  /** E.164 WhatsApp/contact number, e.g. +252612345678 (required by the backend). */
+  phone: string;
+  city: string;
   role: "hospital";
 }
 

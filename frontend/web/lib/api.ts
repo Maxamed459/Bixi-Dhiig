@@ -3,17 +3,25 @@ import { store } from "@/store/store";
 import { setCredentials, setAccessToken, logout } from "@/store/features/authSlice";
 import type { User } from "./types";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
 
 /**
  * Main API client. `withCredentials: true` is required so the browser sends
  * the backend's HttpOnly refresh-token cookie on every request (needed for
  * POST /auth/refresh-token to work).
  */
+// The backend is mobile-first: it treats every request as the mobile app (refresh
+// token in the JSON body, no cookie) unless this header says otherwise. The web
+// dashboard must always identify itself so it gets the HttpOnly refresh cookie.
+const COMMON_HEADERS = {
+  "Content-Type": "application/json",
+  "X-Client-Type": "web",
+};
+
 export const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
-  headers: { "Content-Type": "application/json" },
+  headers: COMMON_HEADERS,
 });
 
 // Separate client (no interceptors) used only for the refresh call itself,
@@ -21,7 +29,7 @@ export const apiClient = axios.create({
 const refreshClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
-  headers: { "Content-Type": "application/json" },
+  headers: COMMON_HEADERS,
 });
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
