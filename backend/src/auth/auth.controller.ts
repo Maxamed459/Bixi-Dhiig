@@ -6,6 +6,7 @@ import {
   findUserByEmail,
   findUserById,
   findUserByIdWithHashPassword,
+  findUserByPhone,
   update_is_email_verified,
   updateIs_deleted,
   updateLastLogin,
@@ -39,14 +40,21 @@ import {
 import { getRedisClient } from "../lib/redis.js";
 import { google } from "googleapis";
 import crypto from "crypto";
+import { getClientType } from "../lib/clientType.js";
+import { notifyWhatsApp } from "../services/whatsapp/notification.service.js";
+import { welcomeWhatsappMessage } from "../services/whatsapp/whatsapp.templates.js";
+import type {
+  RegisterHospitalInput,
+  RegisterUserInput,
+} from "./auth.validation.js";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 // register handler
 export const registerUser = async (req: Request, res: Response) => {
-  const { display_name, email, password } = req.body;
-  const clientType =
-    req.headers["x-client-type"] === "mobile" ? "MOBILE" : "WEB";
+  const { display_name, email, password, phone, bloodType, city } =
+    req.body as RegisterUserInput;
+  const clientType = getClientType(req);
   try {
     const isUserExists = await findUserByEmail(email);
 
@@ -57,6 +65,14 @@ export const registerUser = async (req: Request, res: Response) => {
       });
     }
 
+    const isPhoneTaken = await findUserByPhone(phone);
+    if (isPhoneTaken) {
+      return res.status(400).json({
+        success: false,
+        message: "this phone/WhatsApp number is already registered.",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const role = "USER";
     const newUser = await createNewUser(
@@ -64,6 +80,7 @@ export const registerUser = async (req: Request, res: Response) => {
       email,
       role,
       hashedPassword,
+      { phone, bloodType, city },
     );
     const otpCode = await createOtp(newUser.id);
 
@@ -89,7 +106,7 @@ export const registerUser = async (req: Request, res: Response) => {
         type: "refresh",
       },
       JWT_REFRESH_SECRET!,
-      "15m",
+      "7d",
     );
 
     const client = getRedisClient();
@@ -99,8 +116,6 @@ export const registerUser = async (req: Request, res: Response) => {
     await client.del(rediskey);
 
     await rotateRefreshToken(newUser.id);
-
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
     if (clientType === "WEB") {
       res.cookie("refreshToken", refreshToken, {
@@ -134,16 +149,16 @@ export const registerUser = async (req: Request, res: Response) => {
     logger.info("Here", error);
     return res.status(500).json({
       success: false,
-      message: error,
+      message: error instanceof Error ? error.message : "Something went wrong",
     });
   }
 };
 
 // register handler
 export const registerHospital = async (req: Request, res: Response) => {
-  const { display_name, email, password } = req.body;
-  const clientType =
-    req.headers["x-client-type"] === "mobile" ? "MOBILE" : "WEB";
+  const { display_name, email, password, phone, city } =
+    req.body as RegisterHospitalInput;
+  const clientType = getClientType(req);
   try {
     const isUserExists = await findUserByEmail(email);
 
@@ -151,6 +166,14 @@ export const registerHospital = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "this email already exists please login.",
+      });
+    }
+
+    const isPhoneTaken = await findUserByPhone(phone);
+    if (isPhoneTaken) {
+      return res.status(400).json({
+        success: false,
+        message: "this phone/WhatsApp number is already registered.",
       });
     }
 
@@ -162,6 +185,7 @@ export const registerHospital = async (req: Request, res: Response) => {
       email,
       role,
       hashedPassword,
+      { phone, city },
     );
     const otpCode = await createOtp(newUser.id);
 
@@ -187,7 +211,7 @@ export const registerHospital = async (req: Request, res: Response) => {
         type: "refresh",
       },
       JWT_REFRESH_SECRET!,
-      "15m",
+      "7d",
     );
 
     const client = getRedisClient();
@@ -197,8 +221,6 @@ export const registerHospital = async (req: Request, res: Response) => {
     await client.del(rediskey);
 
     await rotateRefreshToken(newUser.id);
-
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
     if (clientType === "WEB") {
       res.cookie("refreshToken", refreshToken, {
@@ -239,7 +261,7 @@ export const registerHospital = async (req: Request, res: Response) => {
 
 // resend code handler
 export const resendOtpCode = async (req: Request, res: Response) => {
-  const { email } = req.user.email;
+  const { email } = req.user;
   try {
     const user = await findUserByEmail(email);
 
@@ -299,6 +321,15 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await sendWelcomeEmail(verifiedUser.email, verifiedUser.display_name);
 
+    if (verifiedUser.phone) {
+      void notifyWhatsApp({
+        userId: verifiedUser.id,
+        phone: verifiedUser.phone,
+        event: "welcome",
+        text: welcomeWhatsappMessage(verifiedUser.display_name),
+      });
+    }
+
     return res.status(200).json({
       success: true,
       data: verifiedUser,
@@ -316,8 +347,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
 // login handler
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const clientType =
-    req.headers["x-client-type"] === "mobile" ? "MOBILE" : "WEB";
+  const clientType = getClientType(req);
   try {
     const user = await findUserByEmail(email);
 
@@ -361,7 +391,7 @@ export const login = async (req: Request, res: Response) => {
         type: "refresh",
       },
       JWT_REFRESH_SECRET!,
-      "15m",
+      "7d",
     );
 
     const client = getRedisClient();
@@ -400,10 +430,11 @@ export const login = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
+    console.error("FULL CRASH DETAILS:", error);
     logger.info(error);
     return res.status(500).json({
       success: false,
-      message: error,
+      message: error || "An unexpected internal server error occurred",
     });
   }
 };
@@ -411,6 +442,7 @@ export const login = async (req: Request, res: Response) => {
 // refreshToken handler
 export const createNewAccessToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies?.refreshToken ?? req.body.refreshToken;
+  const clientType = getClientType(req);
   if (!refreshToken) {
     return res.status(401).json({
       success: false,
@@ -467,18 +499,10 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
         type: "refresh",
       },
       JWT_REFRESH_SECRET!,
-      "15m",
+      "7d",
     );
 
     await rotateRefreshToken(user.id);
-
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: SEVEN_DAYS_MS,
-    });
 
     const accessToken = await generateJwtToken(
       {
@@ -490,19 +514,32 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
       "15m",
     );
 
+    if (clientType === "WEB") {
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: SEVEN_DAYS_MS,
+      });
+
+      return res.status(201).json({
+        success: true,
+        data: { accessToken, user },
+        message: "accessToken created successfully!",
+      });
+    }
+
     return res.status(201).json({
       success: true,
-      data: {
-        accessToken: accessToken,
-        user,
-      },
+      data: { accessToken, refreshToken: newRefreshToken, user },
       message: "accessToken created successfully!",
     });
   } catch (error) {
     logger.info(error);
     return res.status(500).json({
       success: false,
-      message: error,
+      message: error instanceof Error ? error.message : "Something went wrong",
     });
   }
 };
@@ -643,6 +680,77 @@ export const googleOauth = (_req: Request, res: Response) => {
 
   res.redirect(url);
 };
+// Mobile Google sign-in: the Flutter app signs the user in natively (e.g. with the
+// `google_sign_in` package), gets a Google ID token on-device, and sends just that
+// token here. No redirect, no cookie — we verify it with Google ourselves and hand
+// back our own access/refresh tokens in the JSON body, exactly like /login does for
+// mobile. New accounts created this way are USER (donor) accounts, since that's the
+// only role the mobile app signs up.
+const mobileOAuth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID);
+
+export const mobileGoogleOauth = async (req: Request, res: Response) => {
+  const { idToken } = req.body as { idToken: string };
+
+  try {
+    const ticket = await mobileOAuth2Client.verifyIdToken({
+      idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    if (!payload?.email || !payload.email_verified) {
+      return res.status(400).json({
+        success: false,
+        message: "Google account email not verified",
+      });
+    }
+
+    const { user, isUserNew } = await findOrCreateUser(
+      {
+        providerUserId: payload.sub,
+        email: payload.email,
+        name: payload.name ?? payload.email,
+        picture: payload.picture ?? "",
+      },
+      "USER",
+    );
+
+    if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
+      throw new Error("JWT_SECRETS is not available please provide it");
+    }
+
+    const accessToken = await generateJwtToken(
+      { sub: user.id, role: user.role, type: "access" },
+      JWT_ACCESS_SECRET!,
+      "15m",
+    );
+    const refreshToken = await generateJwtToken(
+      { sub: user.id, role: user.role, type: "refresh" },
+      JWT_REFRESH_SECRET!,
+      "7d",
+    );
+
+    const client = getRedisClient();
+    await client.del(`refresh:${user.id}`);
+    await rotateRefreshToken(user.id);
+
+    if (isUserNew) {
+      await sendWelcomeEmail(user.email, user.display_name);
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: { user, accessToken, refreshToken },
+      message: "signed in with Google successfully",
+    });
+  } catch (error) {
+    logger.info(error);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid Google ID token",
+    });
+  }
+};
 
 export const googleOauthCalback = async (req: Request, res: Response) => {
   const { code, state } = req.query;
@@ -688,7 +796,7 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
         type: "refresh",
       },
       JWT_REFRESH_SECRET!,
-      "15m",
+      "7d",
     );
 
     const client = getRedisClient();
