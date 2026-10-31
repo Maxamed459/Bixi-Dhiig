@@ -6,6 +6,9 @@ import { Request, Response } from "express";
 import { PORT } from "./config/dotenv.js";
 import { logger } from "./config/logger.js";
 import authRouter from "./auth/auth.routes.js";
+import bloodRequestRouter from "./bloodRequests/bloodRequest.routes.js";
+import donationRouter from "./donations/donation.routes.js";
+import userRouter from "./users/user.routes.js";
 import { initRedisclient } from "./lib/redis.js";
 
 const app = express();
@@ -14,7 +17,8 @@ app.use(helmet());
 app.use(
   cors({
     origin: [
-      "http://localhost:3000", // dev
+      "http://localhost:3000", // dev - web
+      "http://localhost:3500", // dev - mobile
       // "https://bixi-dhiig.vercel.app/", // production
     ],
     credentials: true,
@@ -45,6 +49,9 @@ app.get("/api/v1/health", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/blood-requests", bloodRequestRouter);
+app.use("/api/v1/donations", donationRouter);
+app.use("/api/v1/users", userRouter);
 
 await initRedisclient();
 app.listen(PORT, () => {
