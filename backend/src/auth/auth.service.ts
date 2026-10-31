@@ -1,7 +1,6 @@
-import { email } from "zod";
 import { AppError } from "../lib/appError.js";
 import { prisma } from "../lib/prisma.js";
-import { Role } from "../generated/prisma/enums.js";
+import { BloodType, Role } from "../generated/prisma/enums.js";
 
 interface googleUserProfile {
   providerUserId: string;
@@ -32,12 +31,19 @@ export const findUserByIdWithHashPassword = async (userId: string) => {
   return account?.passwordHash;
 };
 
+interface CreateUserExtras {
+  phone?: string;
+  bloodType?: BloodType;
+  city?: string;
+}
+
 // create user
 export const createNewUser = async (
   display_name: string,
   email: string,
   role: Role,
   hashedPassword: string,
+  extras: CreateUserExtras = {},
 ) => {
   try {
     const newUser = await prisma.$transaction(async (tx) => {
@@ -47,6 +53,9 @@ export const createNewUser = async (
           email: email,
           role: role,
           is_email_verified: false,
+          phone: extras.phone,
+          bloodType: extras.bloodType,
+          city: extras.city,
         },
       });
 
@@ -72,6 +81,7 @@ const createGoogleAuthUser = async (
   email: string,
   providerUserId: string,
   picture?: string,
+  role: Role = "HOSPITAL",
 ) => {
   try {
     const newUser = await prisma.$transaction(async (tx) => {
@@ -80,7 +90,7 @@ const createGoogleAuthUser = async (
           display_name: display_name,
           email: email,
           avater: picture,
-          role: "HOSPITAL",
+          role: role,
           is_email_verified: true,
         },
       });
@@ -130,6 +140,15 @@ export const updateLastLogin = async (email: string) => {
   });
 };
 
+// find user by phone (WhatsApp number) — used to enforce uniqueness at registration
+export const findUserByPhone = async (phone: string) => {
+  return await prisma.user.findFirst({
+    where: {
+      phone,
+    },
+  });
+};
+
 // find user by id
 export const findUserById = async (userId: string) => {
   return await prisma.user.findUnique({
@@ -155,7 +174,13 @@ export const updatePassowrd = async (
 };
 
 // find or create user - google oauth
-export const findOrCreateUser = async (profile: googleUserProfile) => {
+// `role` only applies when a brand-new account is created (an existing account keeps
+// its own role) — web callers leave it as the default HOSPITAL, the mobile endpoint
+// passes USER since that's the only role the Flutter app signs donors in as.
+export const findOrCreateUser = async (
+  profile: googleUserProfile,
+  role: Role = "HOSPITAL",
+) => {
   let isUserNew: boolean = false;
   let user = await prisma.user.findUnique({
     where: {
@@ -169,6 +194,7 @@ export const findOrCreateUser = async (profile: googleUserProfile) => {
       profile.email,
       profile.providerUserId,
       profile.picture,
+      role,
     );
     isUserNew = true;
   }
