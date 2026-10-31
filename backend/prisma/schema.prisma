@@ -18,20 +18,46 @@ enum Role {
   HOSPITAL
 }
 
+enum BloodType {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+}
+
 model User {
-  id                String         @id @default(uuid()) @db.Uuid
+  id                String    @id @default(uuid()) @db.Uuid
   display_name      String
-  email             String         @unique
+  email             String    @unique
+  // E.164 format, e.g. +2526xxxxxxxx — also the WhatsApp number used for WAHA notifications.
+  phone             String?   @unique
   avater            String?
-  role              Role     @default(USER)
+  role              Role      @default(USER)
+  bloodType         BloodType?
+  city              String?
+  // Lets a USER opt out of urgent-blood-request WhatsApp broadcasts without deleting their phone number.
+  receiveAlerts     Boolean   @default(true)
   last_login_at     DateTime?
   is_email_verified Boolean
-  active            Boolean  @default(true)
-  is_deleted        Boolean  @default(false)
-  createdAt         DateTime @default(now())  
-  updatedAt         DateTime @updatedAt
+  active            Boolean   @default(true)
+  is_deleted        Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
   oauthAccounts     OauthAccount[]
   hospital          Hospital?
+
+  bloodRequests     BloodRequest[] @relation("RequestedBy")
+  approvedRequests  BloodRequest[] @relation("ApprovedBy")
+  donations         Donation[]     @relation("DonatedBy")
+  confirmedDonations Donation[]    @relation("ConfirmedBy")
+
+  @@index([role])
+  @@index([bloodType, city])
 }
 
 enum AuthProvider {
@@ -44,7 +70,7 @@ model OauthAccount {
   provider       AuthProvider?
   passwordHash   String?
   providerUserId String?
-  createdAt         DateTime @default(now())  
+  createdAt         DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -67,4 +93,115 @@ model Hospital {
   updatedAt     DateTime @updatedAt
 
   user          User     @relation(fields: [userId], references: [id])
+}
+
+enum UrgencyLevel {
+  NORMAL
+  URGENT
+  CRITICAL
+}
+
+enum RequestStatus {
+  PENDING    // USER-submitted request, awaiting ADMIN approval
+  APPROVED   // live and visible to donors — either HOSPITAL (auto) or ADMIN-approved
+  REJECTED
+  FULFILLED  // enough confirmed donations have come in
+  CANCELLED
+}
+
+model BloodRequest {
+  id              String        @id @default(uuid()) @db.Uuid
+
+  requesterId     String        @db.Uuid
+  requester       User          @relation("RequestedBy", fields: [requesterId], references: [id])
+
+  patientName     String
+  bloodType       BloodType
+  unitsNeeded     Int           @default(1)
+  unitsFulfilled  Int           @default(0)
+  urgency         UrgencyLevel  @default(NORMAL)
+
+  hospitalName    String
+  city            String
+  address         String?
+  contactPhone    String
+  notes           String?
+
+  status          RequestStatus @default(PENDING)
+
+  approvedById    String?       @db.Uuid
+  approvedBy      User?         @relation("ApprovedBy", fields: [approvedById], references: [id])
+  approvedAt      DateTime?
+  rejectionReason String?
+
+  donations       Donation[]
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+  @@index([bloodType, city, status])
+  @@index([requesterId])
+}
+
+enum DonationStatus {
+  PENDING    // donor pledged, awaiting confirmation
+  ACCEPTED   // requester/hospital/admin confirmed the pledge
+  COMPLETED  // donation actually happened
+  DECLINED   // requester/hospital/admin declined the pledge
+  CANCELLED  // donor withdrew their own pledge
+}
+
+model Donation {
+  id             String         @id @default(uuid()) @db.Uuid
+
+  donorId        String         @db.Uuid
+  donor          User           @relation("DonatedBy", fields: [donorId], references: [id])
+
+  bloodRequestId String         @db.Uuid
+  bloodRequest   BloodRequest   @relation(fields: [bloodRequestId], references: [id])
+
+  unitsOffered   Int            @default(1)
+  status         DonationStatus @default(PENDING)
+
+  confirmedById  String?        @db.Uuid
+  confirmedBy    User?          @relation("ConfirmedBy", fields: [confirmedById], references: [id])
+
+  scheduledAt    DateTime?
+  completedAt    DateTime?
+  notes          String?
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([donorId, bloodRequestId])
+  @@index([status])
+  @@index([bloodRequestId])
+  @@index([donorId])
+}
+
+enum NotificationChannel {
+  WHATSAPP
+  EMAIL
+}
+
+enum NotificationStatus {
+  SENT
+  FAILED
+}
+
+// Lightweight send log so we can see what WhatsApp/email notifications actually went out
+// (and debug WAHA failures) without re-deriving it from business tables.
+model NotificationLog {
+  id        String              @id @default(uuid()) @db.Uuid
+  userId    String?             @db.Uuid
+  channel   NotificationChannel
+  event     String
+  target    String
+  status    NotificationStatus
+  error     String?
+  createdAt DateTime            @default(now())
+
+  @@index([userId])
+  @@index([event])
 }
