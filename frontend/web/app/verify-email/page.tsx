@@ -8,7 +8,9 @@ import { toast } from "sonner";
 import { MailCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { verifySchema, type VerifyFormValues } from "@/lib/validation";
-import { getErrorMessage } from "@/lib/get-error-message";
+import { useApiError } from "@/hooks/useApiError";
+import { useT } from "@/lib/i18n/context";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { isAllowedRole } from "@/lib/role-guard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +28,8 @@ const RESEND_COOLDOWN_SECONDS = 30;
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+  const t = useT();
+  const apiError = useApiError();
   const { verify, resendCode, isAuthenticated, isLoading, user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -37,9 +41,10 @@ export default function VerifyEmailPage() {
   // is verified), send them back to sign in.
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast.info("Please sign in or register again to verify your account.");
+      toast.info(t("auth.verify.signInAgain"));
       router.replace("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, isAuthenticated, router]);
 
   useEffect(() => {
@@ -60,7 +65,7 @@ export default function VerifyEmailPage() {
     setIsSubmitting(true);
     try {
       const verifiedUser = await verify(values.submittedCode);
-      toast.success("Email verified successfully.");
+      toast.success(t("auth.verify.success"));
 
       if (isAllowedRole(verifiedUser.role)) {
         router.push("/dashboard");
@@ -68,9 +73,7 @@ export default function VerifyEmailPage() {
         router.push("/unauthorized");
       }
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "Invalid or expired code. Please try again."),
-      );
+      toast.error(apiError(error, "auth.verify.failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -80,38 +83,36 @@ export default function VerifyEmailPage() {
     setIsResending(true);
     try {
       await resendCode();
-      toast.success("A new verification code has been sent to your email.");
+      toast.success(t("auth.verify.resent"));
       setCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (error) {
-      toast.error(
-        getErrorMessage(
-          error,
-          "Unable to resend the code. Please try again shortly.",
-        ),
-      );
+      toast.error(apiError(error, "auth.verify.resendFailed"));
     } finally {
       setIsResending(false);
     }
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-12">
+    <div className="relative flex flex-1 items-center justify-center px-4 py-12">
+      <div className="absolute right-4 top-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-sm">
         <CardHeader className="space-y-1 text-center">
           <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-red-600 text-white">
             <MailCheck className="h-5 w-5" />
           </div>
-          <CardTitle className="text-xl">Verify your email</CardTitle>
+          <CardTitle className="text-xl">{t("auth.verify.title")}</CardTitle>
           <CardDescription>
             {user?.email
-              ? `Enter the code we sent to ${user.email}`
-              : "Enter the verification code we sent to your email"}
+              ? t("auth.verify.subtitleWithEmail", { email: user.email })
+              : t("auth.verify.subtitle")}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <FormFieldWrapper
-              label="Verification code"
+              label={t("auth.verify.code")}
               htmlFor="submittedCode"
               error={errors.submittedCode?.message}
             >
@@ -127,7 +128,7 @@ export default function VerifyEmailPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Verifying..." : "Verify email"}
+              {isSubmitting ? t("auth.verify.submitting") : t("auth.verify.submit")}
             </Button>
             <Button
               type="button"
@@ -137,10 +138,10 @@ export default function VerifyEmailPage() {
               onClick={handleResend}
             >
               {cooldown > 0
-                ? `Resend code in ${cooldown}s`
+                ? t("auth.verify.resendIn", { seconds: cooldown })
                 : isResending
-                  ? "Sending..."
-                  : "Resend code"}
+                  ? t("auth.verify.resending")
+                  : t("auth.verify.resend")}
             </Button>
           </CardFooter>
         </form>
