@@ -53,7 +53,10 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   OauthAccount: 'OauthAccount',
-  Hospital: 'Hospital'
+  Hospital: 'Hospital',
+  BloodRequest: 'BloodRequest',
+  Donation: 'Donation',
+  NotificationLog: 'NotificationLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -76,8 +79,12 @@ export const UserScalarFieldEnum = {
   id: 'id',
   display_name: 'display_name',
   email: 'email',
+  phone: 'phone',
   avater: 'avater',
   role: 'role',
+  bloodType: 'bloodType',
+  city: 'city',
+  receiveAlerts: 'receiveAlerts',
   last_login_at: 'last_login_at',
   is_email_verified: 'is_email_verified',
   active: 'active',
@@ -114,6 +121,61 @@ export const HospitalScalarFieldEnum = {
 } as const
 
 export type HospitalScalarFieldEnum = (typeof HospitalScalarFieldEnum)[keyof typeof HospitalScalarFieldEnum]
+
+
+export const BloodRequestScalarFieldEnum = {
+  id: 'id',
+  requesterId: 'requesterId',
+  patientName: 'patientName',
+  bloodType: 'bloodType',
+  unitsNeeded: 'unitsNeeded',
+  unitsFulfilled: 'unitsFulfilled',
+  urgency: 'urgency',
+  hospitalName: 'hospitalName',
+  city: 'city',
+  address: 'address',
+  contactPhone: 'contactPhone',
+  notes: 'notes',
+  status: 'status',
+  approvedById: 'approvedById',
+  approvedAt: 'approvedAt',
+  rejectionReason: 'rejectionReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BloodRequestScalarFieldEnum = (typeof BloodRequestScalarFieldEnum)[keyof typeof BloodRequestScalarFieldEnum]
+
+
+export const DonationScalarFieldEnum = {
+  id: 'id',
+  donorId: 'donorId',
+  bloodRequestId: 'bloodRequestId',
+  unitsOffered: 'unitsOffered',
+  status: 'status',
+  confirmedById: 'confirmedById',
+  scheduledAt: 'scheduledAt',
+  completedAt: 'completedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
+
+
+export const NotificationLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  channel: 'channel',
+  event: 'event',
+  target: 'target',
+  status: 'status',
+  error: 'error',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
 
 
 export const SortOrder = {

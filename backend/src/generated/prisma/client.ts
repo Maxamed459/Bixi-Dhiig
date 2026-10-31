@@ -56,3 +56,18 @@ export type OauthAccount = Prisma.OauthAccountModel
  * 
  */
 export type Hospital = Prisma.HospitalModel
+/**
+ * Model BloodRequest
+ * 
+ */
+export type BloodRequest = Prisma.BloodRequestModel
+/**
+ * Model Donation
+ * 
+ */
+export type Donation = Prisma.DonationModel
+/**
+ * Model NotificationLog
+ * 
+ */
+export type NotificationLog = Prisma.NotificationLogModel

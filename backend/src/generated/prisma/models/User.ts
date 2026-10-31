@@ -28,8 +28,12 @@ export type UserMinAggregateOutputType = {
   id: string | null
   display_name: string | null
   email: string | null
+  phone: string | null
   avater: string | null
   role: $Enums.Role | null
+  bloodType: $Enums.BloodType | null
+  city: string | null
+  receiveAlerts: boolean | null
   last_login_at: Date | null
   is_email_verified: boolean | null
   active: boolean | null
@@ -42,8 +46,12 @@ export type UserMaxAggregateOutputType = {
   id: string | null
   display_name: string | null
   email: string | null
+  phone: string | null
   avater: string | null
   role: $Enums.Role | null
+  bloodType: $Enums.BloodType | null
+  city: string | null
+  receiveAlerts: boolean | null
   last_login_at: Date | null
   is_email_verified: boolean | null
   active: boolean | null
@@ -56,8 +64,12 @@ export type UserCountAggregateOutputType = {
   id: number
   display_name: number
   email: number
+  phone: number
   avater: number
   role: number
+  bloodType: number
+  city: number
+  receiveAlerts: number
   last_login_at: number
   is_email_verified: number
   active: number
@@ -72,8 +84,12 @@ export type UserMinAggregateInputType = {
   id?: true
   display_name?: true
   email?: true
+  phone?: true
   avater?: true
   role?: true
+  bloodType?: true
+  city?: true
+  receiveAlerts?: true
   last_login_at?: true
   is_email_verified?: true
   active?: true
@@ -86,8 +102,12 @@ export type UserMaxAggregateInputType = {
   id?: true
   display_name?: true
   email?: true
+  phone?: true
   avater?: true
   role?: true
+  bloodType?: true
+  city?: true
+  receiveAlerts?: true
   last_login_at?: true
   is_email_verified?: true
   active?: true
@@ -100,8 +120,12 @@ export type UserCountAggregateInputType = {
   id?: true
   display_name?: true
   email?: true
+  phone?: true
   avater?: true
   role?: true
+  bloodType?: true
+  city?: true
+  receiveAlerts?: true
   last_login_at?: true
   is_email_verified?: true
   active?: true
@@ -187,8 +211,12 @@ export type UserGroupByOutputType = {
   id: string
   display_name: string
   email: string
+  phone: string | null
   avater: string | null
   role: $Enums.Role
+  bloodType: $Enums.BloodType | null
+  city: string | null
+  receiveAlerts: boolean
   last_login_at: Date | null
   is_email_verified: boolean
   active: boolean
@@ -222,8 +250,12 @@ export type UserWhereInput = {
   id?: Prisma.UuidFilter<"User"> | string
   display_name?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
+  phone?: Prisma.StringNullableFilter<"User"> | string | null
   avater?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
+  bloodType?: Prisma.EnumBloodTypeNullableFilter<"User"> | $Enums.BloodType | null
+  city?: Prisma.StringNullableFilter<"User"> | string | null
+  receiveAlerts?: Prisma.BoolFilter<"User"> | boolean
   last_login_at?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   is_email_verified?: Prisma.BoolFilter<"User"> | boolean
   active?: Prisma.BoolFilter<"User"> | boolean
@@ -232,14 +264,22 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   oauthAccounts?: Prisma.OauthAccountListRelationFilter
   hospital?: Prisma.XOR<Prisma.HospitalNullableScalarRelationFilter, Prisma.HospitalWhereInput> | null
+  bloodRequests?: Prisma.BloodRequestListRelationFilter
+  approvedRequests?: Prisma.BloodRequestListRelationFilter
+  donations?: Prisma.DonationListRelationFilter
+  confirmedDonations?: Prisma.DonationListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   avater?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  receiveAlerts?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -248,17 +288,25 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   oauthAccounts?: Prisma.OauthAccountOrderByRelationAggregateInput
   hospital?: Prisma.HospitalOrderByWithRelationInput
+  bloodRequests?: Prisma.BloodRequestOrderByRelationAggregateInput
+  approvedRequests?: Prisma.BloodRequestOrderByRelationAggregateInput
+  donations?: Prisma.DonationOrderByRelationAggregateInput
+  confirmedDonations?: Prisma.DonationOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  phone?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   display_name?: Prisma.StringFilter<"User"> | string
   avater?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
+  bloodType?: Prisma.EnumBloodTypeNullableFilter<"User"> | $Enums.BloodType | null
+  city?: Prisma.StringNullableFilter<"User"> | string | null
+  receiveAlerts?: Prisma.BoolFilter<"User"> | boolean
   last_login_at?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   is_email_verified?: Prisma.BoolFilter<"User"> | boolean
   active?: Prisma.BoolFilter<"User"> | boolean
@@ -267,14 +315,22 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   oauthAccounts?: Prisma.OauthAccountListRelationFilter
   hospital?: Prisma.XOR<Prisma.HospitalNullableScalarRelationFilter, Prisma.HospitalWhereInput> | null
-}, "id" | "email">
+  bloodRequests?: Prisma.BloodRequestListRelationFilter
+  approvedRequests?: Prisma.BloodRequestListRelationFilter
+  donations?: Prisma.DonationListRelationFilter
+  confirmedDonations?: Prisma.DonationListRelationFilter
+}, "id" | "email" | "phone">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   avater?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  receiveAlerts?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -293,8 +349,12 @@ export type UserScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"User"> | string
   display_name?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
+  phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   avater?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
+  bloodType?: Prisma.EnumBloodTypeNullableWithAggregatesFilter<"User"> | $Enums.BloodType | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  receiveAlerts?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   last_login_at?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   is_email_verified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   active?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
@@ -307,8 +367,12 @@ export type UserCreateInput = {
   id?: string
   display_name: string
   email: string
+  phone?: string | null
   avater?: string | null
   role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
   last_login_at?: Date | string | null
   is_email_verified: boolean
   active?: boolean
@@ -317,14 +381,22 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
   hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
 }
 
 export type UserUncheckedCreateInput = {
   id?: string
   display_name: string
   email: string
+  phone?: string | null
   avater?: string | null
   role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
   last_login_at?: Date | string | null
   is_email_verified: boolean
   active?: boolean
@@ -333,14 +405,22 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
   hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
 }
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -349,14 +429,22 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
   hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -365,14 +453,22 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
   hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
 }
 
 export type UserCreateManyInput = {
   id?: string
   display_name: string
   email: string
+  phone?: string | null
   avater?: string | null
   role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
   last_login_at?: Date | string | null
   is_email_verified: boolean
   active?: boolean
@@ -385,8 +481,12 @@ export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -399,8 +499,12 @@ export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -413,8 +517,12 @@ export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   avater?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  receiveAlerts?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -427,8 +535,12 @@ export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   avater?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  receiveAlerts?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -441,8 +553,12 @@ export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   display_name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   avater?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  receiveAlerts?: Prisma.SortOrder
   last_login_at?: Prisma.SortOrder
   is_email_verified?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -454,6 +570,11 @@ export type UserMinOrderByAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -468,12 +589,16 @@ export type EnumRoleFieldUpdateOperationsInput = {
   set?: $Enums.Role
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
+export type NullableEnumBloodTypeFieldUpdateOperationsInput = {
+  set?: $Enums.BloodType | null
 }
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -508,12 +633,76 @@ export type UserUpdateOneRequiredWithoutHospitalNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHospitalInput, Prisma.UserUpdateWithoutHospitalInput>, Prisma.UserUncheckedUpdateWithoutHospitalInput>
 }
 
+export type UserCreateNestedOneWithoutBloodRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBloodRequestsInput, Prisma.UserUncheckedCreateWithoutBloodRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBloodRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutApprovedRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedRequestsInput, Prisma.UserUncheckedCreateWithoutApprovedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBloodRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBloodRequestsInput, Prisma.UserUncheckedCreateWithoutBloodRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBloodRequestsInput
+  upsert?: Prisma.UserUpsertWithoutBloodRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBloodRequestsInput, Prisma.UserUpdateWithoutBloodRequestsInput>, Prisma.UserUncheckedUpdateWithoutBloodRequestsInput>
+}
+
+export type UserUpdateOneWithoutApprovedRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedRequestsInput, Prisma.UserUncheckedCreateWithoutApprovedRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedRequestsInput
+  upsert?: Prisma.UserUpsertWithoutApprovedRequestsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutApprovedRequestsInput, Prisma.UserUpdateWithoutApprovedRequestsInput>, Prisma.UserUncheckedUpdateWithoutApprovedRequestsInput>
+}
+
+export type UserCreateNestedOneWithoutDonationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDonationsInput, Prisma.UserUncheckedCreateWithoutDonationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDonationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutConfirmedDonationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConfirmedDonationsInput, Prisma.UserUncheckedCreateWithoutConfirmedDonationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConfirmedDonationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDonationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDonationsInput, Prisma.UserUncheckedCreateWithoutDonationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDonationsInput
+  upsert?: Prisma.UserUpsertWithoutDonationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDonationsInput, Prisma.UserUpdateWithoutDonationsInput>, Prisma.UserUncheckedUpdateWithoutDonationsInput>
+}
+
+export type UserUpdateOneWithoutConfirmedDonationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConfirmedDonationsInput, Prisma.UserUncheckedCreateWithoutConfirmedDonationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConfirmedDonationsInput
+  upsert?: Prisma.UserUpsertWithoutConfirmedDonationsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutConfirmedDonationsInput, Prisma.UserUpdateWithoutConfirmedDonationsInput>, Prisma.UserUncheckedUpdateWithoutConfirmedDonationsInput>
+}
+
 export type UserCreateWithoutOauthAccountsInput = {
   id?: string
   display_name: string
   email: string
+  phone?: string | null
   avater?: string | null
   role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
   last_login_at?: Date | string | null
   is_email_verified: boolean
   active?: boolean
@@ -521,14 +710,22 @@ export type UserCreateWithoutOauthAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
 }
 
 export type UserUncheckedCreateWithoutOauthAccountsInput = {
   id?: string
   display_name: string
   email: string
+  phone?: string | null
   avater?: string | null
   role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
   last_login_at?: Date | string | null
   is_email_verified: boolean
   active?: boolean
@@ -536,6 +733,10 @@ export type UserUncheckedCreateWithoutOauthAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
 }
 
 export type UserCreateOrConnectWithoutOauthAccountsInput = {
@@ -558,8 +759,12 @@ export type UserUpdateWithoutOauthAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -567,14 +772,22 @@ export type UserUpdateWithoutOauthAccountsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -582,14 +795,22 @@ export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
 }
 
 export type UserCreateWithoutHospitalInput = {
   id?: string
   display_name: string
   email: string
+  phone?: string | null
   avater?: string | null
   role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
   last_login_at?: Date | string | null
   is_email_verified: boolean
   active?: boolean
@@ -597,14 +818,22 @@ export type UserCreateWithoutHospitalInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
 }
 
 export type UserUncheckedCreateWithoutHospitalInput = {
   id?: string
   display_name: string
   email: string
+  phone?: string | null
   avater?: string | null
   role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
   last_login_at?: Date | string | null
   is_email_verified: boolean
   active?: boolean
@@ -612,6 +841,10 @@ export type UserUncheckedCreateWithoutHospitalInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
 }
 
 export type UserCreateOrConnectWithoutHospitalInput = {
@@ -634,8 +867,12 @@ export type UserUpdateWithoutHospitalInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -643,14 +880,22 @@ export type UserUpdateWithoutHospitalInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHospitalInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   display_name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
   last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -658,6 +903,442 @@ export type UserUncheckedUpdateWithoutHospitalInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserCreateWithoutBloodRequestsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
+  approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserUncheckedCreateWithoutBloodRequestsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
+  approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserCreateOrConnectWithoutBloodRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBloodRequestsInput, Prisma.UserUncheckedCreateWithoutBloodRequestsInput>
+}
+
+export type UserCreateWithoutApprovedRequestsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserUncheckedCreateWithoutApprovedRequestsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserCreateOrConnectWithoutApprovedRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovedRequestsInput, Prisma.UserUncheckedCreateWithoutApprovedRequestsInput>
+}
+
+export type UserUpsertWithoutBloodRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBloodRequestsInput, Prisma.UserUncheckedUpdateWithoutBloodRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBloodRequestsInput, Prisma.UserUncheckedCreateWithoutBloodRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBloodRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBloodRequestsInput, Prisma.UserUncheckedUpdateWithoutBloodRequestsInput>
+}
+
+export type UserUpdateWithoutBloodRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
+  approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBloodRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+  approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserUpsertWithoutApprovedRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutApprovedRequestsInput, Prisma.UserUncheckedUpdateWithoutApprovedRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovedRequestsInput, Prisma.UserUncheckedCreateWithoutApprovedRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutApprovedRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutApprovedRequestsInput, Prisma.UserUncheckedUpdateWithoutApprovedRequestsInput>
+}
+
+export type UserUpdateWithoutApprovedRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutApprovedRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserCreateWithoutDonationsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
+  confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserUncheckedCreateWithoutDonationsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
+  confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserCreateOrConnectWithoutDonationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDonationsInput, Prisma.UserUncheckedCreateWithoutDonationsInput>
+}
+
+export type UserCreateWithoutConfirmedDonationsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+}
+
+export type UserUncheckedCreateWithoutConfirmedDonationsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+}
+
+export type UserCreateOrConnectWithoutConfirmedDonationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutConfirmedDonationsInput, Prisma.UserUncheckedCreateWithoutConfirmedDonationsInput>
+}
+
+export type UserUpsertWithoutDonationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDonationsInput, Prisma.UserUncheckedUpdateWithoutDonationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDonationsInput, Prisma.UserUncheckedCreateWithoutDonationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDonationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDonationsInput, Prisma.UserUncheckedUpdateWithoutDonationsInput>
+}
+
+export type UserUpdateWithoutDonationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
+  confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDonationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+  confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserUpsertWithoutConfirmedDonationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutConfirmedDonationsInput, Prisma.UserUncheckedUpdateWithoutConfirmedDonationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutConfirmedDonationsInput, Prisma.UserUncheckedCreateWithoutConfirmedDonationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutConfirmedDonationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutConfirmedDonationsInput, Prisma.UserUncheckedUpdateWithoutConfirmedDonationsInput>
+}
+
+export type UserUpdateWithoutConfirmedDonationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutConfirmedDonationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
 }
 
 
@@ -667,10 +1348,18 @@ export type UserUncheckedUpdateWithoutHospitalInput = {
 
 export type UserCountOutputType = {
   oauthAccounts: number
+  bloodRequests: number
+  approvedRequests: number
+  donations: number
+  confirmedDonations: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   oauthAccounts?: boolean | UserCountOutputTypeCountOauthAccountsArgs
+  bloodRequests?: boolean | UserCountOutputTypeCountBloodRequestsArgs
+  approvedRequests?: boolean | UserCountOutputTypeCountApprovedRequestsArgs
+  donations?: boolean | UserCountOutputTypeCountDonationsArgs
+  confirmedDonations?: boolean | UserCountOutputTypeCountConfirmedDonationsArgs
 }
 
 /**
@@ -690,13 +1379,45 @@ export type UserCountOutputTypeCountOauthAccountsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.OauthAccountWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountBloodRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BloodRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountApprovedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BloodRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDonationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DonationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountConfirmedDonationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DonationWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   display_name?: boolean
   email?: boolean
+  phone?: boolean
   avater?: boolean
   role?: boolean
+  bloodType?: boolean
+  city?: boolean
+  receiveAlerts?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
   active?: boolean
@@ -705,6 +1426,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   oauthAccounts?: boolean | Prisma.User$oauthAccountsArgs<ExtArgs>
   hospital?: boolean | Prisma.User$hospitalArgs<ExtArgs>
+  bloodRequests?: boolean | Prisma.User$bloodRequestsArgs<ExtArgs>
+  approvedRequests?: boolean | Prisma.User$approvedRequestsArgs<ExtArgs>
+  donations?: boolean | Prisma.User$donationsArgs<ExtArgs>
+  confirmedDonations?: boolean | Prisma.User$confirmedDonationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -712,8 +1437,12 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   display_name?: boolean
   email?: boolean
+  phone?: boolean
   avater?: boolean
   role?: boolean
+  bloodType?: boolean
+  city?: boolean
+  receiveAlerts?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
   active?: boolean
@@ -726,8 +1455,12 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   display_name?: boolean
   email?: boolean
+  phone?: boolean
   avater?: boolean
   role?: boolean
+  bloodType?: boolean
+  city?: boolean
+  receiveAlerts?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
   active?: boolean
@@ -740,8 +1473,12 @@ export type UserSelectScalar = {
   id?: boolean
   display_name?: boolean
   email?: boolean
+  phone?: boolean
   avater?: boolean
   role?: boolean
+  bloodType?: boolean
+  city?: boolean
+  receiveAlerts?: boolean
   last_login_at?: boolean
   is_email_verified?: boolean
   active?: boolean
@@ -750,10 +1487,14 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "display_name" | "email" | "avater" | "role" | "last_login_at" | "is_email_verified" | "active" | "is_deleted" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "display_name" | "email" | "phone" | "avater" | "role" | "bloodType" | "city" | "receiveAlerts" | "last_login_at" | "is_email_verified" | "active" | "is_deleted" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   oauthAccounts?: boolean | Prisma.User$oauthAccountsArgs<ExtArgs>
   hospital?: boolean | Prisma.User$hospitalArgs<ExtArgs>
+  bloodRequests?: boolean | Prisma.User$bloodRequestsArgs<ExtArgs>
+  approvedRequests?: boolean | Prisma.User$approvedRequestsArgs<ExtArgs>
+  donations?: boolean | Prisma.User$donationsArgs<ExtArgs>
+  confirmedDonations?: boolean | Prisma.User$confirmedDonationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -764,13 +1505,21 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     oauthAccounts: Prisma.$OauthAccountPayload<ExtArgs>[]
     hospital: Prisma.$HospitalPayload<ExtArgs> | null
+    bloodRequests: Prisma.$BloodRequestPayload<ExtArgs>[]
+    approvedRequests: Prisma.$BloodRequestPayload<ExtArgs>[]
+    donations: Prisma.$DonationPayload<ExtArgs>[]
+    confirmedDonations: Prisma.$DonationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     display_name: string
     email: string
+    phone: string | null
     avater: string | null
     role: $Enums.Role
+    bloodType: $Enums.BloodType | null
+    city: string | null
+    receiveAlerts: boolean
     last_login_at: Date | null
     is_email_verified: boolean
     active: boolean
@@ -1173,6 +1922,10 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   oauthAccounts<T extends Prisma.User$oauthAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$oauthAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OauthAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hospital<T extends Prisma.User$hospitalArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hospitalArgs<ExtArgs>>): Prisma.Prisma__HospitalClient<runtime.Types.Result.GetResult<Prisma.$HospitalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  bloodRequests<T extends Prisma.User$bloodRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bloodRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BloodRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  approvedRequests<T extends Prisma.User$approvedRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BloodRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  donations<T extends Prisma.User$donationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$donationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  confirmedDonations<T extends Prisma.User$confirmedDonationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$confirmedDonationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1205,8 +1958,12 @@ export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'String'>
   readonly display_name: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
+  readonly phone: Prisma.FieldRef<"User", 'String'>
   readonly avater: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'Role'>
+  readonly bloodType: Prisma.FieldRef<"User", 'BloodType'>
+  readonly city: Prisma.FieldRef<"User", 'String'>
+  readonly receiveAlerts: Prisma.FieldRef<"User", 'Boolean'>
   readonly last_login_at: Prisma.FieldRef<"User", 'DateTime'>
   readonly is_email_verified: Prisma.FieldRef<"User", 'Boolean'>
   readonly active: Prisma.FieldRef<"User", 'Boolean'>
@@ -1646,6 +2403,102 @@ export type User$hospitalArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.HospitalInclude<ExtArgs> | null
   where?: Prisma.HospitalWhereInput
+}
+
+/**
+ * User.bloodRequests
+ */
+export type User$bloodRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BloodRequest
+   */
+  select?: Prisma.BloodRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BloodRequest
+   */
+  omit?: Prisma.BloodRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BloodRequestInclude<ExtArgs> | null
+  where?: Prisma.BloodRequestWhereInput
+  orderBy?: Prisma.BloodRequestOrderByWithRelationInput | Prisma.BloodRequestOrderByWithRelationInput[]
+  cursor?: Prisma.BloodRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BloodRequestScalarFieldEnum | Prisma.BloodRequestScalarFieldEnum[]
+}
+
+/**
+ * User.approvedRequests
+ */
+export type User$approvedRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BloodRequest
+   */
+  select?: Prisma.BloodRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BloodRequest
+   */
+  omit?: Prisma.BloodRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BloodRequestInclude<ExtArgs> | null
+  where?: Prisma.BloodRequestWhereInput
+  orderBy?: Prisma.BloodRequestOrderByWithRelationInput | Prisma.BloodRequestOrderByWithRelationInput[]
+  cursor?: Prisma.BloodRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BloodRequestScalarFieldEnum | Prisma.BloodRequestScalarFieldEnum[]
+}
+
+/**
+ * User.donations
+ */
+export type User$donationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Donation
+   */
+  select?: Prisma.DonationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Donation
+   */
+  omit?: Prisma.DonationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DonationInclude<ExtArgs> | null
+  where?: Prisma.DonationWhereInput
+  orderBy?: Prisma.DonationOrderByWithRelationInput | Prisma.DonationOrderByWithRelationInput[]
+  cursor?: Prisma.DonationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DonationScalarFieldEnum | Prisma.DonationScalarFieldEnum[]
+}
+
+/**
+ * User.confirmedDonations
+ */
+export type User$confirmedDonationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Donation
+   */
+  select?: Prisma.DonationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Donation
+   */
+  omit?: Prisma.DonationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DonationInclude<ExtArgs> | null
+  where?: Prisma.DonationWhereInput
+  orderBy?: Prisma.DonationOrderByWithRelationInput | Prisma.DonationOrderByWithRelationInput[]
+  cursor?: Prisma.DonationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DonationScalarFieldEnum | Prisma.DonationScalarFieldEnum[]
 }
 
 /**
