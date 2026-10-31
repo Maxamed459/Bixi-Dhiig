@@ -17,6 +17,15 @@ export const GOOGLE_OAUTH_REDIRECT_URI = process.env.GOOGLE_OAUTH_REDIRECT_URI;
 export const FRONTEND_URL = process.env.FRONTEND_URL;
 export const SENDER_EMAIL = process.env.SENDER_EMAIL;
 export const EMAIL_FROM = process.env.EMAIL_FROM;
+
+// Resend (email)
+export const RESEND_API_KEY = process.env.RESEND_API_KEY;
+
+// WAHA (WhatsApp HTTP API) — self-hosted WhatsApp sending for blood-request/donation alerts.
+export const WAHA_BASE_URL = process.env.WAHA_BASE_URL;
+export const WAHA_API_KEY = process.env.WAHA_API_KEY;
+export const WAHA_SESSION = process.env.WAHA_SESSION || "default";
+
 export const LOG_LEVEL = process.env.LOG_LEVEL;
 export const NODE_ENV = process.env.NODE_ENV;
 export const MAX_LIMIT = Number(process.env.MAX_LIMIT || "100");
