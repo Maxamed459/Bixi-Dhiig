@@ -19,7 +19,8 @@ import {
   googleOauth,
 } from "@/lib/auth";
 import { isAllowedRole } from "@/lib/role-guard";
-import { getErrorMessage } from "@/lib/get-error-message";
+import { useApiError } from "@/hooks/useApiError";
+import { useT } from "@/lib/i18n/context";
 
 /**
  * Same public shape as the old Context-based useAuth() hook, so pages and
@@ -29,6 +30,8 @@ import { getErrorMessage } from "@/lib/get-error-message";
 export function useAuth() {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const t = useT();
+  const apiError = useApiError();
   const { user, accessToken, isAuthenticated, status } = useAppSelector(
     (state) => state.auth,
   );
@@ -42,9 +45,7 @@ export function useAuth() {
 
       if (!isAllowedRole(loggedInUser.role)) {
         dispatch(logoutAction());
-        toast.error(
-          "This account doesn't have access to the web dashboard. Please use the mobile app.",
-        );
+        toast.error(t("auth.roleNotAllowed"));
         router.push("/unauthorized");
         throw new Error("ROLE_NOT_ALLOWED");
       }
@@ -52,7 +53,7 @@ export function useAuth() {
       dispatch(setCredentials({ user: loggedInUser, accessToken: token }));
       return loggedInUser;
     },
-    [dispatch, router],
+    [dispatch, router, t],
   );
 
   const register = useCallback(
@@ -103,24 +104,19 @@ export function useAuth() {
         }
       } catch (error) {
         if (!options?.silent) {
-          toast.error(
-            getErrorMessage(
-              error,
-              "Could not end the server session, but you were logged out locally.",
-            ),
-          );
+          toast.error(apiError(error, "auth.logoutFailed"));
         }
       } finally {
         dispatch(logoutAction());
         if (!options?.silent) {
           if (serverLogoutSucceeded) {
-            toast.success("You've been logged out.");
+            toast.success(t("auth.loggedOut"));
           }
           router.push("/login");
         }
       }
     },
-    [accessToken, dispatch, router],
+    [accessToken, dispatch, router, t, apiError],
   );
 
   return {

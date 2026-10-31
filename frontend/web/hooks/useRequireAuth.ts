@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/context";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout as logoutAction } from "@/store/features/authSlice";
 import { DASHBOARD_ROLES, isAllowedRole } from "@/lib/role-guard";
@@ -16,6 +17,7 @@ import type { UserRole } from "@/lib/types";
 export function useRequireAuth(allowedRoles: UserRole[] = DASHBOARD_ROLES) {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const t = useT();
   const { user, isAuthenticated, status } = useAppSelector((state) => state.auth);
   const isLoading = status === "idle" || status === "loading";
 
@@ -28,7 +30,7 @@ export function useRequireAuth(allowedRoles: UserRole[] = DASHBOARD_ROLES) {
     }
 
     if (!isAllowedRole(user.role, allowedRoles)) {
-      toast.error("You don't have permission to access this page.");
+      toast.error(t("auth.noPermission"));
       dispatch(logoutAction());
       router.replace("/unauthorized");
     }
