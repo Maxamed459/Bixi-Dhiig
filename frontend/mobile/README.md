@@ -1,16 +1,24 @@
-# mobile
+# Bixi-Dhiig mobile (Flutter)
 
-A new Flutter project.
+Donor / requester app for the Bixi-Dhiig blood-donation platform. English + Somali (EN/SOM).
+State, navigation and i18n use GetX.
 
-## Getting Started
+## Setup
+1. `flutter pub get`
+2. Set the API URL in `lib/core/constants.dart` (`apiBaseUrl`):
+   - Android emulator: `http://10.0.2.2:4000/api/v1` (default)
+   - Real device: `http://<your-LAN-IP>:4000/api/v1`
+3. Google Sign-In: put your **web** OAuth client ID in `googleServerClientId`
+   (same value as the backend `GOOGLE_CLIENT_ID`), and register the Android
+   SHA-1 / iOS client in Google Cloud.
+4. `flutter run`
 
-This project is a starting point for a Flutter application.
+The backend treats requests without `X-Client-Type: web` as mobile, so the
+refresh token comes back in the JSON body and is kept in secure storage.
+The app expects `GET/PATCH /users/me` on the backend.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Add a language
+1. Add a map in `lib/l10n/translations.dart` and register it in `keys`.
+2. Add `{'code': 'xx', 'name': 'Name'}` to `AppTranslations.supported`.
+Framework (Material) strings fall back to English for unsupported locales
+(see `lib/l10n/fallback_delegates.dart`).
