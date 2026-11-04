@@ -135,6 +135,31 @@ export const rejectBloodRequest = async (
   });
 };
 
+/** Admin action: close out a live request as fulfilled once enough donations have been
+ * collected outside the app (e.g. a walk-in donor at the hospital). */
+export const fulfillBloodRequest = async (id: string, adminId: string) => {
+  const request = await getBloodRequestById(id);
+
+  if (request.status === "FULFILLED") {
+    throw new AppError(400, "Request is already fulfilled");
+  }
+
+  if (request.status !== "APPROVED") {
+    throw new AppError(400, "Only live requests can be marked as fulfilled");
+  }
+
+  return prisma.bloodRequest.update({
+    where: { id },
+    data: {
+      status: "FULFILLED",
+      unitsFulfilled: Math.max(request.unitsFulfilled, request.unitsNeeded),
+      approvedById: request.approvedById ?? adminId,
+      approvedAt: request.approvedAt ?? new Date(),
+    },
+    include: { requester: true },
+  });
+};
+
 export const cancelBloodRequest = async (id: string, actor: RequestingUser) => {
   const request = await getBloodRequestById(id);
 

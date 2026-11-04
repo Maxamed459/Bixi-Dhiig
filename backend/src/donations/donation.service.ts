@@ -2,11 +2,14 @@ import { prisma } from "../lib/prisma.js";
 import { AppError } from "../lib/appError.js";
 import { getBloodRequestById, recordFulfilledUnit } from "../bloodRequests/bloodRequest.service.js";
 import type { CreateDonationInput, UpdateDonationStatusInput } from "./donation.validation.js";
-import type { Role } from "../generated/prisma/enums.js";
+import type { AdminPermission, Role } from "../generated/prisma/enums.js";
+import { hasPermission } from "../lib/permissions.js";
 
 interface Actor {
   id: string;
   role: Role;
+  isSuperAdmin?: boolean | null;
+  permissions?: AdminPermission[] | null;
 }
 
 export const pledgeDonation = async (donorId: string, input: CreateDonationInput) => {
@@ -109,6 +112,11 @@ export const updateDonationStatus = async (
     // (or an admin on their behalf) — not the donor.
     if (!isRequester && !isAdmin) {
       throw new AppError(403, "Only the requester or an admin can update this donation");
+    }
+
+    // Admins acting on someone else's request need the donation-management permission.
+    if (!isRequester && isAdmin && !hasPermission(actor, "MANAGE_DONATIONS")) {
+      throw new AppError(403, "You don't have permission to manage donations");
     }
   }
 

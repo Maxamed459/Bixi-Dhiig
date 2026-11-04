@@ -1,6 +1,7 @@
 import express from "express";
 import { authenticate } from "../middlewares/authenticate.js";
 import { authorizeRoles } from "../middlewares/authorize.js";
+import { authorizePermission } from "../middlewares/permissions.js";
 import { validateBody, validateQuery } from "../middlewares/validate.js";
 import {
   createBloodRequestSchema,
@@ -11,6 +12,7 @@ import {
   approveBloodRequestHandler,
   cancelBloodRequestHandler,
   createBloodRequestHandler,
+  fulfillBloodRequestHandler,
   getBloodRequestHandler,
   listBloodRequestsHandler,
   listMyBloodRequestsHandler,
@@ -36,13 +38,21 @@ bloodRequestRouter.get("/:id", getBloodRequestHandler);
 bloodRequestRouter.patch(
   "/:id/approve",
   authorizeRoles("ADMIN"),
+  authorizePermission("REVIEW_REQUESTS"),
   approveBloodRequestHandler,
 );
 bloodRequestRouter.patch(
   "/:id/reject",
   authorizeRoles("ADMIN"),
+  authorizePermission("REVIEW_REQUESTS"),
   validateBody(rejectBloodRequestSchema),
   rejectBloodRequestHandler,
+);
+bloodRequestRouter.patch(
+  "/:id/fulfill",
+  authorizeRoles("ADMIN"),
+  authorizePermission("REVIEW_REQUESTS"),
+  fulfillBloodRequestHandler,
 );
 bloodRequestRouter.patch("/:id/cancel", cancelBloodRequestHandler);
 

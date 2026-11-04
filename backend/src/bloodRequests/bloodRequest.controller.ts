@@ -7,6 +7,7 @@ import {
   createBloodRequest,
   findAdminsWithPhone,
   findMatchingDonors,
+  fulfillBloodRequest,
   getBloodRequestById,
   listBloodRequests,
   listMyBloodRequests,
@@ -21,6 +22,7 @@ import {
   adminApprovalNeededMessage,
   donorAlertMessage,
   requestApprovedMessage,
+  requestFulfilledMessage,
   requestRejectedMessage,
 } from "../services/whatsapp/whatsapp.templates.js";
 
@@ -156,6 +158,25 @@ export const cancelBloodRequestHandler = async (req: Request, res: Response) => 
   try {
     const request = await cancelBloodRequest((req.params.id as string), req.user!);
     return res.status(200).json({ success: true, data: request, message: "Request cancelled." });
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
+export const fulfillBloodRequestHandler = async (req: Request, res: Response) => {
+  try {
+    const request = await fulfillBloodRequest((req.params.id as string), req.user!.id);
+
+    if (request.requester.phone) {
+      void notifyWhatsApp({
+        userId: request.requester.id,
+        phone: request.requester.phone,
+        event: "blood_request_fulfilled",
+        text: requestFulfilledMessage(request),
+      });
+    }
+
+    return res.status(200).json({ success: true, data: request, message: "Request marked as fulfilled." });
   } catch (error) {
     return handleError(res, error);
   }
