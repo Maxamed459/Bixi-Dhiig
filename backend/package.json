@@ -8,7 +8,8 @@
     "dev": "nodemon --exec tsx src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "prisma:generate": "npx prisma generate"
+    "prisma:generate": "npx prisma generate",
+    "grant-superadmin": "tsx src/scripts/grantSuperadmin.ts"
   },
   "keywords": [],
   "author": "",
