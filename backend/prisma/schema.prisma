@@ -29,6 +29,14 @@ enum BloodType {
   O_NEGATIVE
 }
 
+// Granular capabilities for ADMIN accounts. Superadmins bypass these checks.
+enum AdminPermission {
+  MANAGE_USERS
+  REVIEW_REQUESTS
+  MANAGE_DONATIONS
+  VIEW_NOTIFICATIONS
+}
+
 model User {
   id                String    @id @default(uuid()) @db.Uuid
   display_name      String
@@ -37,6 +45,10 @@ model User {
   phone             String?   @unique
   avater            String?
   role              Role      @default(USER)
+  // Superadmins can create admins and grant/revoke permissions. Bootstrap-script only for the first one.
+  isSuperAdmin      Boolean   @default(false)
+  // Only meaningful when role is ADMIN. Superadmins implicitly have every permission.
+  permissions       AdminPermission[] @default([])
   bloodType         BloodType?
   city              String?
   // Lets a USER opt out of urgent-blood-request WhatsApp broadcasts without deleting their phone number.
