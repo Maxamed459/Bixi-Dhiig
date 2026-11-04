@@ -11,6 +11,7 @@ import {
   useApproveRequest,
   useBloodRequest,
   useCancelRequest,
+  useFulfillRequest,
   useRejectRequest,
   useRequestDonations,
   useUpdateDonation,
@@ -21,6 +22,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { DonationStatusBadge, StatusBadge, UrgencyBadge } from "@/components/requests/badges";
+import { LifecycleTimeline } from "@/components/requests/lifecycle-timeline";
 import { RejectDialog } from "@/components/requests/reject-dialog";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -48,9 +50,11 @@ export default function RequestDetailPage() {
   const approve = useApproveRequest();
   const reject = useRejectRequest();
   const cancel = useCancelRequest();
+  const fulfill = useFulfillRequest();
   const updateDonation = useUpdateDonation();
   const [rejecting, setRejecting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [fulfilling, setFulfilling] = useState(false);
 
   if (request.isLoading) {
     return <Loader2 className="h-6 w-6 animate-spin text-red-600" />;
@@ -115,6 +119,9 @@ export default function RequestDetailPage() {
           {canCancel && (
             <Button variant="outline" onClick={() => setCancelling(true)}>{t("requests.cancel")}</Button>
           )}
+          {isAdmin && r.status === "APPROVED" && (
+            <Button variant="outline" onClick={() => setFulfilling(true)}>{t("requests.fulfill")}</Button>
+          )}
         </div>
       </div>
 
@@ -142,6 +149,16 @@ export default function RequestDetailPage() {
             {r.rejectionReason && <Field label={t("detail.rejectionReason")}>{r.rejectionReason}</Field>}
             <div className="sm:col-span-2"><Field label={t("detail.notes")}>{r.notes}</Field></div>
           </dl>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("detail.lifecycle")}</CardTitle>
+          <CardDescription>{t("detail.lifecycleDescription")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LifecycleTimeline request={r} />
         </CardContent>
       </Card>
 
@@ -244,6 +261,32 @@ export default function RequestDetailPage() {
               }
             >
               {t("requests.confirmCancel")}
+            </Button>
+          </>
+        }
+      />
+
+      <Dialog
+        open={fulfilling}
+        onClose={() => setFulfilling(false)}
+        title={t("requests.fulfillTitle")}
+        description={t("requests.fulfillDescription")}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setFulfilling(false)}>{t("common.cancel")}</Button>
+            <Button
+              disabled={fulfill.isPending}
+              onClick={() =>
+                fulfill.mutate(r.id, {
+                  onSuccess: () => {
+                    toast.success(t("requests.fulfilledToast"));
+                    setFulfilling(false);
+                  },
+                  onError: (e) => toast.error(apiError(e, "requests.fulfillFailed")),
+                })
+              }
+            >
+              {t("requests.confirmFulfill")}
             </Button>
           </>
         }
