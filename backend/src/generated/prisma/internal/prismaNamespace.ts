@@ -912,6 +912,8 @@ export const UserScalarFieldEnum = {
   phone: 'phone',
   avater: 'avater',
   role: 'role',
+  isSuperAdmin: 'isSuperAdmin',
+  permissions: 'permissions',
   bloodType: 'bloodType',
   city: 'city',
   receiveAlerts: 'receiveAlerts',
@@ -1067,6 +1069,27 @@ export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'AdminPermission[]'
+ */
+export type ListEnumAdminPermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AdminPermission[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AdminPermission'
+ */
+export type EnumAdminPermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AdminPermission'>
+    
+
+
+/**
  * Reference to a field of type 'BloodType'
  */
 export type EnumBloodTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BloodType'>
@@ -1077,13 +1100,6 @@ export type EnumBloodTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
  * Reference to a field of type 'BloodType[]'
  */
 export type ListEnumBloodTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BloodType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

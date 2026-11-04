@@ -82,6 +82,8 @@ export const UserScalarFieldEnum = {
   phone: 'phone',
   avater: 'avater',
   role: 'role',
+  isSuperAdmin: 'isSuperAdmin',
+  permissions: 'permissions',
   bloodType: 'bloodType',
   city: 'city',
   receiveAlerts: 'receiveAlerts',

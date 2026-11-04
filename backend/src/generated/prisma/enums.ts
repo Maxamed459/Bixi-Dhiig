@@ -32,6 +32,16 @@ export const BloodType = {
 export type BloodType = (typeof BloodType)[keyof typeof BloodType]
 
 
+export const AdminPermission = {
+  MANAGE_USERS: 'MANAGE_USERS',
+  REVIEW_REQUESTS: 'REVIEW_REQUESTS',
+  MANAGE_DONATIONS: 'MANAGE_DONATIONS',
+  VIEW_NOTIFICATIONS: 'VIEW_NOTIFICATIONS'
+} as const
+
+export type AdminPermission = (typeof AdminPermission)[keyof typeof AdminPermission]
+
+
 export const AuthProvider = {
   PASSWORD: 'PASSWORD',
   GOOGLE: 'GOOGLE'
