@@ -5,6 +5,7 @@ import {
   approveBloodRequest,
   cancelBloodRequest,
   createBloodRequest,
+  fulfillBloodRequest,
   getBloodRequest,
   listBloodRequests,
   listDonationsForRequest,
@@ -30,10 +31,11 @@ const PAGE_SIZE = 10;
  * /mine has no filters/pagination server-side, so those are applied here to keep the
  * table behaving the same in both scopes.
  */
-export function useRequestsList(filters: RequestFilters, scope: "all" | "mine" = "all") {
+export function useRequestsList(filters: RequestFilters, scope: "all" | "mine" = "all", enabled = true) {
   return useQuery<Paginated<BloodRequest>>({
     queryKey: requestKeys.list(filters, scope),
     placeholderData: keepPreviousData,
+    enabled,
     queryFn: async () => {
       if (scope === "all") return listBloodRequests({ ...filters, limit: filters.limit ?? PAGE_SIZE });
 
@@ -97,6 +99,11 @@ export function useRejectRequest() {
 export function useCancelRequest() {
   const invalidate = useInvalidateRequests();
   return useMutation({ mutationFn: (id: string) => cancelBloodRequest(id), onSuccess: invalidate });
+}
+
+export function useFulfillRequest() {
+  const invalidate = useInvalidateRequests();
+  return useMutation({ mutationFn: (id: string) => fulfillBloodRequest(id), onSuccess: invalidate });
 }
 
 export function useUpdateDonation() {
