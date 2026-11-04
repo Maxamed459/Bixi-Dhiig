@@ -1,15 +1,35 @@
+import type { BloodType } from "./blood-requests";
+
 export type UserRole = "ADMIN" | "HOSPITAL" | "USER";
+
+export const ADMIN_PERMISSIONS = [
+  "MANAGE_USERS",
+  "REVIEW_REQUESTS",
+  "MANAGE_DONATIONS",
+  "VIEW_NOTIFICATIONS",
+] as const;
+
+export type AdminPermission = (typeof ADMIN_PERMISSIONS)[number];
 
 export interface User {
   id: string;
   display_name: string;
   email: string;
   role: UserRole;
-  avater?: string;
+  isSuperAdmin?: boolean;
+  permissions?: AdminPermission[];
+  avater?: string | null;
   phone?: string | null;
   city?: string | null;
+  bloodType?: BloodType | null;
+  receiveAlerts?: boolean;
   isVerified?: boolean;
+  is_email_verified?: boolean;
+  active?: boolean;
+  is_deleted?: boolean;
+  last_login_at?: string | null;
   createdAt?: string;
+  updatedAt?: string;
   [key: string]: unknown;
 }
 
@@ -30,3 +50,11 @@ export interface ApiEnvelope<T> {
   message: string;
   data: T;
 }
+
+export type Paginated<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};

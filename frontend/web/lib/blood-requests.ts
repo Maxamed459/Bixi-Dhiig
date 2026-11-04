@@ -23,6 +23,7 @@ export interface BloodRequest {
   approvedAt?: string | null;
   rejectionReason?: string | null;
   createdAt: string;
+  updatedAt: string;
   requester?: { id: string; display_name: string; role: string; phone?: string | null };
   _count?: { donations: number };
 }
@@ -99,6 +100,11 @@ export async function rejectBloodRequest(id: string, reason?: string): Promise<B
 
 export async function cancelBloodRequest(id: string): Promise<BloodRequest> {
   const res = await apiClient.patch(`/blood-requests/${id}/cancel`);
+  return data(res.data);
+}
+
+export async function fulfillBloodRequest(id: string): Promise<BloodRequest> {
+  const res = await apiClient.patch(`/blood-requests/${id}/fulfill`);
   return data(res.data);
 }
 
