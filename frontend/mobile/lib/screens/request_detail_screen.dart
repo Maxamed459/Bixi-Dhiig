@@ -63,7 +63,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   Widget _body(BloodRequest r) {
     final me = Get.find<AuthController>().user.value;
     final isOwner = me != null && me.id == r.requesterId;
-    final canPledge = !isOwner && r.status == 'APPROVED';
+    final canPledge = me?.canDonate == true && !isOwner && r.status == 'APPROVED';
     final location = r.address == null ? r.city : '${r.address}, ${r.city}';
 
     return ListView(

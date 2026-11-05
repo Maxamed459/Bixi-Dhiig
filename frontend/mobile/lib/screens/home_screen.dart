@@ -88,25 +88,30 @@ class HomeScreen extends StatelessWidget {
                 )),
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _QuickAction(
-                  icon: Icons.add_circle_outline,
-                  label: 'request_blood'.tr,
-                  onTap: () => Get.to(() => const CreateRequestScreen()),
+          Obx(() {
+            final canRequest = auth.user.value?.canRequest == true;
+            return Row(
+              children: [
+                if (canRequest) ...[
+                  Expanded(
+                    child: _QuickAction(
+                      icon: Icons.add_circle_outline,
+                      label: 'request_blood'.tr,
+                      onTap: () => Get.to(() => const CreateRequestScreen()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: _QuickAction(
+                    icon: Icons.volunteer_activism_outlined,
+                    label: 'find_to_donate'.tr,
+                    onTap: () => nav.index.value = 1,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickAction(
-                  icon: Icons.volunteer_activism_outlined,
-                  label: 'find_to_donate'.tr,
-                  onTap: () => nav.index.value = 1,
-                ),
-              ),
-            ],
-          ),
+              ],
+            );
+          }),
           const SizedBox(height: 24),
           Row(
             children: [

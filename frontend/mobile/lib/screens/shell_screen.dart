@@ -33,6 +33,7 @@ class _ShellScreenState extends State<ShellScreen> {
   Widget build(BuildContext context) {
     return Obx(() {
       final i = nav.index.value;
+      final canRequest = Get.find<AuthController>().user.value?.canRequest == true;
       return Scaffold(
         body: SafeArea(
           child: IndexedStack(
@@ -45,7 +46,7 @@ class _ShellScreenState extends State<ShellScreen> {
             ],
           ),
         ),
-        floatingActionButton: i == 1
+        floatingActionButton: i == 1 && canRequest
             ? FloatingActionButton.extended(
                 onPressed: () => Get.to(() => const CreateRequestScreen()),
                 icon: const Icon(Icons.add),

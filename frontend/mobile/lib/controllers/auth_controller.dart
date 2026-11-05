@@ -57,7 +57,7 @@ class AuthController extends GetxController {
     final u = user.value;
     if (u == null) {
       Get.offAll(() => const LoginScreen());
-    } else if (u.role != 'USER') {
+    } else if (u.role != 'USER' && !u.canDonate && !u.canRequest) {
       Get.offAll(() => const WebOnlyScreen());
     } else if (!u.isEmailVerified) {
       Get.offAll(() => const VerifyEmailScreen());

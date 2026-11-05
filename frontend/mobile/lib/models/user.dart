@@ -11,6 +11,8 @@ class AppUser {
   final String? city;
   final bool receiveAlerts;
   final bool isEmailVerified;
+  final bool canDonate;
+  final bool canRequest;
 
   const AppUser({
     required this.id,
@@ -23,6 +25,8 @@ class AppUser {
     this.city,
     this.receiveAlerts = true,
     this.isEmailVerified = false,
+    this.canDonate = true,
+    this.canRequest = true,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> j) => AppUser(
@@ -36,5 +40,7 @@ class AppUser {
         city: asStr(j['city']),
         receiveAlerts: j['receiveAlerts'] != false,
         isEmailVerified: j['is_email_verified'] == true,
+        canDonate: j['canDonate'] != false,
+        canRequest: j['canRequest'] != false,
       );
 }
