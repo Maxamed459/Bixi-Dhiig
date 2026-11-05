@@ -49,6 +49,9 @@ model User {
   isSuperAdmin      Boolean   @default(false)
   // Only meaningful when role is ADMIN. Superadmins implicitly have every permission.
   permissions       AdminPermission[] @default([])
+  // Admin accounts may also participate in the mobile donor/requester workflows.
+  canDonate         Boolean   @default(true)
+  canRequest        Boolean   @default(true)
   bloodType         BloodType?
   city              String?
   // Lets a USER opt out of urgent-blood-request WhatsApp broadcasts without deleting their phone number.

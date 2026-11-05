@@ -49,6 +49,8 @@ export const createAdminUserSchema = z.object({
   // Admin-only fields. Only superadmins may set these; non-superadmins get a 403.
   permissions: z.array(adminPermissionSchema).optional(),
   isSuperAdmin: z.boolean().optional(),
+  canDonate: z.boolean().default(true),
+  canRequest: z.boolean().default(true),
   // Hospital-only profile details (also accepted for ADMIN/USER but ignored).
   hospitalName: z.string().trim().min(2).optional(),
   licenseNumber: z.string().trim().optional(),
@@ -69,6 +71,8 @@ export const updateAdminUserSchema = z.object({
   active: z.boolean().optional(),
   permissions: z.array(adminPermissionSchema).optional(),
   isSuperAdmin: z.boolean().optional(),
+  canDonate: z.boolean().optional(),
+  canRequest: z.boolean().optional(),
   hospitalName: z.string().trim().min(2).optional(),
   licenseNumber: z.string().trim().nullable().optional(),
   address: z.string().trim().nullable().optional(),

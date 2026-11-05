@@ -183,7 +183,8 @@ export const cancelBloodRequest = async (id: string, actor: RequestingUser) => {
 export const findMatchingDonors = async (bloodType: BloodType, city: string) => {
   return prisma.user.findMany({
     where: {
-      role: "USER",
+      role: { in: ["USER", "ADMIN"] },
+      canDonate: true,
       bloodType,
       city: { equals: city, mode: "insensitive" },
       active: true,

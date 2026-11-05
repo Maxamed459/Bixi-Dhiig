@@ -32,6 +32,8 @@ export type UserMinAggregateOutputType = {
   avater: string | null
   role: $Enums.Role | null
   isSuperAdmin: boolean | null
+  canDonate: boolean | null
+  canRequest: boolean | null
   bloodType: $Enums.BloodType | null
   city: string | null
   receiveAlerts: boolean | null
@@ -51,6 +53,8 @@ export type UserMaxAggregateOutputType = {
   avater: string | null
   role: $Enums.Role | null
   isSuperAdmin: boolean | null
+  canDonate: boolean | null
+  canRequest: boolean | null
   bloodType: $Enums.BloodType | null
   city: string | null
   receiveAlerts: boolean | null
@@ -71,6 +75,8 @@ export type UserCountAggregateOutputType = {
   role: number
   isSuperAdmin: number
   permissions: number
+  canDonate: number
+  canRequest: number
   bloodType: number
   city: number
   receiveAlerts: number
@@ -92,6 +98,8 @@ export type UserMinAggregateInputType = {
   avater?: true
   role?: true
   isSuperAdmin?: true
+  canDonate?: true
+  canRequest?: true
   bloodType?: true
   city?: true
   receiveAlerts?: true
@@ -111,6 +119,8 @@ export type UserMaxAggregateInputType = {
   avater?: true
   role?: true
   isSuperAdmin?: true
+  canDonate?: true
+  canRequest?: true
   bloodType?: true
   city?: true
   receiveAlerts?: true
@@ -131,6 +141,8 @@ export type UserCountAggregateInputType = {
   role?: true
   isSuperAdmin?: true
   permissions?: true
+  canDonate?: true
+  canRequest?: true
   bloodType?: true
   city?: true
   receiveAlerts?: true
@@ -224,6 +236,8 @@ export type UserGroupByOutputType = {
   role: $Enums.Role
   isSuperAdmin: boolean
   permissions: $Enums.AdminPermission[]
+  canDonate: boolean
+  canRequest: boolean
   bloodType: $Enums.BloodType | null
   city: string | null
   receiveAlerts: boolean
@@ -265,6 +279,8 @@ export type UserWhereInput = {
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   isSuperAdmin?: Prisma.BoolFilter<"User"> | boolean
   permissions?: Prisma.EnumAdminPermissionNullableListFilter<"User">
+  canDonate?: Prisma.BoolFilter<"User"> | boolean
+  canRequest?: Prisma.BoolFilter<"User"> | boolean
   bloodType?: Prisma.EnumBloodTypeNullableFilter<"User"> | $Enums.BloodType | null
   city?: Prisma.StringNullableFilter<"User"> | string | null
   receiveAlerts?: Prisma.BoolFilter<"User"> | boolean
@@ -291,6 +307,8 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   isSuperAdmin?: Prisma.SortOrder
   permissions?: Prisma.SortOrder
+  canDonate?: Prisma.SortOrder
+  canRequest?: Prisma.SortOrder
   bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   receiveAlerts?: Prisma.SortOrder
@@ -320,6 +338,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   isSuperAdmin?: Prisma.BoolFilter<"User"> | boolean
   permissions?: Prisma.EnumAdminPermissionNullableListFilter<"User">
+  canDonate?: Prisma.BoolFilter<"User"> | boolean
+  canRequest?: Prisma.BoolFilter<"User"> | boolean
   bloodType?: Prisma.EnumBloodTypeNullableFilter<"User"> | $Enums.BloodType | null
   city?: Prisma.StringNullableFilter<"User"> | string | null
   receiveAlerts?: Prisma.BoolFilter<"User"> | boolean
@@ -346,6 +366,8 @@ export type UserOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   isSuperAdmin?: Prisma.SortOrder
   permissions?: Prisma.SortOrder
+  canDonate?: Prisma.SortOrder
+  canRequest?: Prisma.SortOrder
   bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   receiveAlerts?: Prisma.SortOrder
@@ -372,6 +394,8 @@ export type UserScalarWhereWithAggregatesInput = {
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   isSuperAdmin?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   permissions?: Prisma.EnumAdminPermissionNullableListFilter<"User">
+  canDonate?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  canRequest?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   bloodType?: Prisma.EnumBloodTypeNullableWithAggregatesFilter<"User"> | $Enums.BloodType | null
   city?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   receiveAlerts?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
@@ -392,6 +416,8 @@ export type UserCreateInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -418,6 +444,8 @@ export type UserUncheckedCreateInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -444,6 +472,8 @@ export type UserUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -470,6 +500,8 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -496,6 +528,8 @@ export type UserCreateManyInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -516,6 +550,8 @@ export type UserUpdateManyMutationInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -536,6 +572,8 @@ export type UserUncheckedUpdateManyInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -564,6 +602,8 @@ export type UserCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   isSuperAdmin?: Prisma.SortOrder
   permissions?: Prisma.SortOrder
+  canDonate?: Prisma.SortOrder
+  canRequest?: Prisma.SortOrder
   bloodType?: Prisma.SortOrder
   city?: Prisma.SortOrder
   receiveAlerts?: Prisma.SortOrder
@@ -583,6 +623,8 @@ export type UserMaxOrderByAggregateInput = {
   avater?: Prisma.SortOrder
   role?: Prisma.SortOrder
   isSuperAdmin?: Prisma.SortOrder
+  canDonate?: Prisma.SortOrder
+  canRequest?: Prisma.SortOrder
   bloodType?: Prisma.SortOrder
   city?: Prisma.SortOrder
   receiveAlerts?: Prisma.SortOrder
@@ -602,6 +644,8 @@ export type UserMinOrderByAggregateInput = {
   avater?: Prisma.SortOrder
   role?: Prisma.SortOrder
   isSuperAdmin?: Prisma.SortOrder
+  canDonate?: Prisma.SortOrder
+  canRequest?: Prisma.SortOrder
   bloodType?: Prisma.SortOrder
   city?: Prisma.SortOrder
   receiveAlerts?: Prisma.SortOrder
@@ -757,6 +801,8 @@ export type UserCreateWithoutOauthAccountsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -782,6 +828,8 @@ export type UserUncheckedCreateWithoutOauthAccountsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -823,6 +871,8 @@ export type UserUpdateWithoutOauthAccountsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -848,6 +898,8 @@ export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -873,6 +925,8 @@ export type UserCreateWithoutHospitalInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -898,6 +952,8 @@ export type UserUncheckedCreateWithoutHospitalInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -939,6 +995,8 @@ export type UserUpdateWithoutHospitalInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -964,6 +1022,8 @@ export type UserUncheckedUpdateWithoutHospitalInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -989,6 +1049,8 @@ export type UserCreateWithoutBloodRequestsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1014,6 +1076,8 @@ export type UserUncheckedCreateWithoutBloodRequestsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1044,6 +1108,8 @@ export type UserCreateWithoutApprovedRequestsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1069,6 +1135,8 @@ export type UserUncheckedCreateWithoutApprovedRequestsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1110,6 +1178,8 @@ export type UserUpdateWithoutBloodRequestsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1135,6 +1205,8 @@ export type UserUncheckedUpdateWithoutBloodRequestsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1171,6 +1243,8 @@ export type UserUpdateWithoutApprovedRequestsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1196,6 +1270,8 @@ export type UserUncheckedUpdateWithoutApprovedRequestsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1221,6 +1297,8 @@ export type UserCreateWithoutDonationsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1246,6 +1324,8 @@ export type UserUncheckedCreateWithoutDonationsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1276,6 +1356,8 @@ export type UserCreateWithoutConfirmedDonationsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1301,6 +1383,8 @@ export type UserUncheckedCreateWithoutConfirmedDonationsInput = {
   role?: $Enums.Role
   isSuperAdmin?: boolean
   permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: $Enums.BloodType | null
   city?: string | null
   receiveAlerts?: boolean
@@ -1342,6 +1426,8 @@ export type UserUpdateWithoutDonationsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1367,6 +1453,8 @@ export type UserUncheckedUpdateWithoutDonationsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1403,6 +1491,8 @@ export type UserUpdateWithoutConfirmedDonationsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1428,6 +1518,8 @@ export type UserUncheckedUpdateWithoutConfirmedDonationsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1520,6 +1612,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   isSuperAdmin?: boolean
   permissions?: boolean
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: boolean
   city?: boolean
   receiveAlerts?: boolean
@@ -1547,6 +1641,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   isSuperAdmin?: boolean
   permissions?: boolean
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: boolean
   city?: boolean
   receiveAlerts?: boolean
@@ -1567,6 +1663,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   isSuperAdmin?: boolean
   permissions?: boolean
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: boolean
   city?: boolean
   receiveAlerts?: boolean
@@ -1587,6 +1685,8 @@ export type UserSelectScalar = {
   role?: boolean
   isSuperAdmin?: boolean
   permissions?: boolean
+  canDonate?: boolean
+  canRequest?: boolean
   bloodType?: boolean
   city?: boolean
   receiveAlerts?: boolean
@@ -1598,7 +1698,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "display_name" | "email" | "phone" | "avater" | "role" | "isSuperAdmin" | "permissions" | "bloodType" | "city" | "receiveAlerts" | "last_login_at" | "is_email_verified" | "active" | "is_deleted" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "display_name" | "email" | "phone" | "avater" | "role" | "isSuperAdmin" | "permissions" | "canDonate" | "canRequest" | "bloodType" | "city" | "receiveAlerts" | "last_login_at" | "is_email_verified" | "active" | "is_deleted" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   oauthAccounts?: boolean | Prisma.User$oauthAccountsArgs<ExtArgs>
   hospital?: boolean | Prisma.User$hospitalArgs<ExtArgs>
@@ -1630,6 +1730,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     role: $Enums.Role
     isSuperAdmin: boolean
     permissions: $Enums.AdminPermission[]
+    canDonate: boolean
+    canRequest: boolean
     bloodType: $Enums.BloodType | null
     city: string | null
     receiveAlerts: boolean
@@ -2076,6 +2178,8 @@ export interface UserFieldRefs {
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly isSuperAdmin: Prisma.FieldRef<"User", 'Boolean'>
   readonly permissions: Prisma.FieldRef<"User", 'AdminPermission[]'>
+  readonly canDonate: Prisma.FieldRef<"User", 'Boolean'>
+  readonly canRequest: Prisma.FieldRef<"User", 'Boolean'>
   readonly bloodType: Prisma.FieldRef<"User", 'BloodType'>
   readonly city: Prisma.FieldRef<"User", 'String'>
   readonly receiveAlerts: Prisma.FieldRef<"User", 'Boolean'>

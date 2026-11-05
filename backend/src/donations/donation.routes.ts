@@ -2,6 +2,7 @@ import express from "express";
 import { authenticate } from "../middlewares/authenticate.js";
 import { authorizeRoles } from "../middlewares/authorize.js";
 import { validateBody } from "../middlewares/validate.js";
+import { AppError } from "../lib/appError.js";
 import { createDonationSchema, updateDonationStatusSchema } from "./donation.validation.js";
 import {
   getDonationHandler,
@@ -18,7 +19,8 @@ donationRouter.use(authenticate);
 // Donors (USER role — the Flutter app) pledge to a live blood request.
 donationRouter.post(
   "/",
-  authorizeRoles("USER"),
+  authorizeRoles("USER", "ADMIN"),
+  (req, _res, next) => req.user?.canDonate === false ? next(new AppError(403, "This account cannot donate blood.")) : next(),
   validateBody(createDonationSchema),
   pledgeDonationHandler,
 );

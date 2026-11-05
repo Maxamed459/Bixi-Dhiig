@@ -9,6 +9,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "npx prisma generate",
+    "prisma:migrate-deploy": "npx prisma migrate deploy",
     "grant-superadmin": "tsx src/scripts/grantSuperadmin.ts"
   },
   "keywords": [],

@@ -84,6 +84,8 @@ export const UserScalarFieldEnum = {
   role: 'role',
   isSuperAdmin: 'isSuperAdmin',
   permissions: 'permissions',
+  canDonate: 'canDonate',
+  canRequest: 'canRequest',
   bloodType: 'bloodType',
   city: 'city',
   receiveAlerts: 'receiveAlerts',

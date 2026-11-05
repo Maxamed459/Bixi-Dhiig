@@ -2,6 +2,7 @@ import express from "express";
 import { authenticate } from "../middlewares/authenticate.js";
 import { authorizeRoles } from "../middlewares/authorize.js";
 import { authorizePermission } from "../middlewares/permissions.js";
+import { AppError } from "../lib/appError.js";
 import { validateBody, validateQuery } from "../middlewares/validate.js";
 import {
   createBloodRequestSchema,
@@ -26,7 +27,8 @@ bloodRequestRouter.use(authenticate);
 // USER (donor/requester) and HOSPITAL can both create requests; HOSPITAL ones auto-approve.
 bloodRequestRouter.post(
   "/",
-  authorizeRoles("USER", "HOSPITAL"),
+  authorizeRoles("USER", "HOSPITAL", "ADMIN"),
+  (req, _res, next) => req.user?.canRequest === false ? next(new AppError(403, "This account cannot create blood requests.")) : next(),
   validateBody(createBloodRequestSchema),
   createBloodRequestHandler,
 );
