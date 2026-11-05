@@ -6,12 +6,13 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useApiError } from "@/hooks/useApiError";
-import { useAdminUser, useDeleteAdminUser, useUpdateAdminUser } from "@/hooks/useAdmin";
+import { useAdminUser, useDeleteAdminAccount, useDeleteAdminUser, useUpdateAdminAccount, useUpdateAdminUser } from "@/hooks/useAdmin";
 import { useI18n } from "@/lib/i18n/context";
 import type { AdminUserDetail, UpdateAdminUserInput } from "@/lib/admin";
 import type { AdminUserFormValues } from "@/lib/validation";
 import { AdminUserForm } from "@/components/users/admin-user-form";
 import { RoleGate } from "@/components/layout/role-gate";
+import { PermissionGate } from "@/components/layout/permission-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -43,7 +44,9 @@ export default function UserDetailPage() {
 
   const userQuery = useAdminUser(id);
   const update = useUpdateAdminUser(id);
+  const updateAccount = useUpdateAdminAccount(id);
   const remove = useDeleteAdminUser();
+  const removeAccount = useDeleteAdminAccount();
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   if (userQuery.isLoading) {
@@ -77,6 +80,10 @@ export default function UserDetailPage() {
     hospitalName: user.hospital?.name ?? "",
     licenseNumber: user.hospital?.licenseNumber ?? "",
     address: user.hospital?.address ?? "",
+    permissions: user.permissions,
+    isSuperAdmin: user.isSuperAdmin,
+    canDonate: user.canDonate,
+    canRequest: user.canRequest,
   };
 
   const onSubmit = (values: AdminUserFormValues) => {
@@ -89,6 +96,7 @@ export default function UserDetailPage() {
       is_email_verified: values.is_email_verified,
       receiveAlerts: values.receiveAlerts,
       active: values.active,
+      ...(user.role === "ADMIN" ? { permissions: values.permissions, isSuperAdmin: values.isSuperAdmin, canDonate: values.canDonate, canRequest: values.canRequest } : {}),
       ...(values.password ? { password: values.password } : {}),
       ...(values.role === "HOSPITAL"
         ? {
@@ -99,14 +107,14 @@ export default function UserDetailPage() {
         : {}),
     };
 
-    update.mutate(payload, {
+    (user.role === "ADMIN" ? updateAccount : update).mutate(payload, {
       onSuccess: () => toast.success(t("users.updatedToast")),
       onError: (error) => toast.error(apiError(error, "users.saveFailed")),
     });
   };
 
   const onDelete = () =>
-    remove.mutate(user.id, {
+    (user.role === "ADMIN" ? removeAccount : remove).mutate(user.id, {
       onSuccess: () => {
         toast.success(t("users.deletedToast"));
         router.push("/dashboard/users");
@@ -116,6 +124,7 @@ export default function UserDetailPage() {
 
   return (
     <RoleGate roles={["ADMIN"]}>
+      <PermissionGate permission="MANAGE_USERS">
       <div className="mx-auto max-w-5xl space-y-6">
         <Link href="/dashboard/users" className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900">
           <ArrowLeft className="h-4 w-4" />
@@ -136,7 +145,7 @@ export default function UserDetailPage() {
               )}
             </div>
           </div>
-          <Button variant="destructive" onClick={() => setConfirmDelete(true)} disabled={remove.isPending}>
+          <Button variant="destructive" onClick={() => setConfirmDelete(true)} disabled={remove.isPending || removeAccount.isPending}>
             <Trash2 className="h-4 w-4" />
             {t("users.delete")}
           </Button>
@@ -204,7 +213,7 @@ export default function UserDetailPage() {
 
         <div>
           <h2 className="mb-3 text-lg font-semibold text-zinc-900">{t("users.detail.editTitle")}</h2>
-          <AdminUserForm key={user.id} mode="edit" defaultValues={defaultValues} submitting={update.isPending} onSubmit={onSubmit} />
+          <AdminUserForm key={user.id} mode="edit" adminMode={user.role === "ADMIN"} defaultValues={defaultValues} submitting={update.isPending || updateAccount.isPending} onSubmit={onSubmit} />
         </div>
 
         <Card>
@@ -288,16 +297,17 @@ export default function UserDetailPage() {
           description={t("users.deleteDescription", { name: user.display_name })}
           footer={
             <>
-              <Button variant="outline" onClick={() => setConfirmDelete(false)} disabled={remove.isPending}>
+              <Button variant="outline" onClick={() => setConfirmDelete(false)} disabled={remove.isPending || removeAccount.isPending}>
                 {t("common.cancel")}
               </Button>
-              <Button variant="destructive" onClick={onDelete} disabled={remove.isPending}>
+              <Button variant="destructive" onClick={onDelete} disabled={remove.isPending || removeAccount.isPending}>
                 {t("users.confirmDelete")}
               </Button>
             </>
           }
         />
       </div>
+      </PermissionGate>
     </RoleGate>
   );
 }

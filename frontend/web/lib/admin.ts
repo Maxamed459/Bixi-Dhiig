@@ -15,6 +15,8 @@ export interface AdminUser {
   role: UserRole;
   isSuperAdmin: boolean;
   permissions: AdminPermission[];
+  canDonate: boolean;
+  canRequest: boolean;
   bloodType?: BloodType | null;
   city?: string | null;
   receiveAlerts: boolean;
@@ -79,6 +81,8 @@ export interface CreateAdminUserInput {
   role: UserRole;
   permissions?: AdminPermission[];
   isSuperAdmin?: boolean;
+  canDonate?: boolean;
+  canRequest?: boolean;
   bloodType?: BloodType;
   city?: string;
   is_email_verified?: boolean;
@@ -96,6 +100,8 @@ export interface UpdateAdminUserInput {
   role?: UserRole;
   permissions?: AdminPermission[];
   isSuperAdmin?: boolean;
+  canDonate?: boolean;
+  canRequest?: boolean;
   bloodType?: BloodType | null;
   city?: string | null;
   is_email_verified?: boolean;
@@ -275,6 +281,31 @@ export async function createAdminUser(input: CreateAdminUserInput): Promise<Admi
   input: UpdateAdminUserInput,
 ): Promise<AdminUser> {
   const res = await apiClient.patch(`/admin/users/${id}`, input);
+  return data(res.data);
+}
+
+export async function listAdminAccounts(
+  filters: AdminUserFilters,
+): Promise<Paginated<AdminUser>> {
+  const res = await apiClient.get("/admin/admins", { params: clean(filters) });
+  return data(res.data);
+}
+
+export async function createAdminAccount(input: CreateAdminUserInput): Promise<AdminUser> {
+  const res = await apiClient.post("/admin/admins", { ...input, role: "ADMIN" });
+  return data(res.data);
+}
+
+export async function updateAdminAccount(
+  id: string,
+  input: UpdateAdminUserInput,
+): Promise<AdminUser> {
+  const res = await apiClient.patch(`/admin/admins/${id}`, input);
+  return data(res.data);
+}
+
+export async function deleteAdminAccount(id: string): Promise<AdminUser> {
+  const res = await apiClient.delete(`/admin/admins/${id}`);
   return data(res.data);
 }
 

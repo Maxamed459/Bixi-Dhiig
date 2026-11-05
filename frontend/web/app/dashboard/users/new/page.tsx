@@ -11,6 +11,7 @@ import type { CreateAdminUserInput } from "@/lib/admin";
 import type { AdminUserFormValues } from "@/lib/validation";
 import { AdminUserForm } from "@/components/users/admin-user-form";
 import { RoleGate } from "@/components/layout/role-gate";
+import { PermissionGate } from "@/components/layout/permission-gate";
 
 export default function NewUserPage() {
   const router = useRouter();
@@ -49,6 +50,7 @@ export default function NewUserPage() {
 
   return (
     <RoleGate roles={["ADMIN"]}>
+      <PermissionGate permission="MANAGE_USERS">
       <div className="mx-auto max-w-3xl space-y-6">
         <Link href="/dashboard/users" className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900">
           <ArrowLeft className="h-4 w-4" />
@@ -60,6 +62,7 @@ export default function NewUserPage() {
         </div>
         <AdminUserForm mode="create" submitting={create.isPending} onSubmit={onSubmit} />
       </div>
+      </PermissionGate>
     </RoleGate>
   );
 }

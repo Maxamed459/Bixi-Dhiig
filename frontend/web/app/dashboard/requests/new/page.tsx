@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { NativeSelect } from "@/components/ui/native-select";
 import { FormFieldWrapper } from "@/components/ui/form-field";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { hasPermission } from "@/lib/permissions";
 
 export default function NewRequestPage() {
   const router = useRouter();
@@ -24,11 +24,7 @@ export default function NewRequestPage() {
   const { user } = useAuth();
   const create = useCreateRequest();
 
-  // Only hospitals create requests (they auto-approve). Admins just review them.
-  const isAdmin = user?.role === "ADMIN";
-  useEffect(() => {
-    if (isAdmin) router.replace("/dashboard/requests");
-  }, [isAdmin, router]);
+  const canCreateRequest = user?.role === "HOSPITAL" || (user?.role === "ADMIN" && user.canRequest === true);
 
   const {
     register,
@@ -54,8 +50,8 @@ export default function NewRequestPage() {
       onError: (error) => toast.error(apiError(error, "newRequest.failed")),
     });
 
-  if (isAdmin) {
-    return <p className="text-sm text-zinc-500">{t("newRequest.adminNotice")}</p>;
+  if (!canCreateRequest) {
+    return <p className="text-sm text-zinc-500">{t("auth.noPermission")}</p>;
   }
 
   return (

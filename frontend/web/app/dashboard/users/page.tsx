@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { RoleGate } from "@/components/layout/role-gate";
+import { PermissionGate } from "@/components/layout/permission-gate";
 
 function AccountBadge({ user }: { user: AdminUser }) {
   const { t } = useI18n();
@@ -49,6 +50,7 @@ export default function UsersPage() {
 
   return (
     <RoleGate roles={["ADMIN"]}>
+      <PermissionGate permission="MANAGE_USERS">
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -214,6 +216,7 @@ export default function UsersPage() {
           )}
         </Card>
       </div>
+      </PermissionGate>
     </RoleGate>
   );
 }

@@ -10,6 +10,7 @@ import {
   listBloodRequests,
   listDonationsForRequest,
   listMyBloodRequests,
+  pledgeDonation,
   rejectBloodRequest,
   updateDonationStatus,
   type BloodRequest,
@@ -81,6 +82,11 @@ function useInvalidateRequests() {
 export function useCreateRequest() {
   const invalidate = useInvalidateRequests();
   return useMutation({ mutationFn: createBloodRequest, onSuccess: invalidate });
+}
+
+export function usePledgeDonation() {
+  const invalidate = useInvalidateRequests();
+  return useMutation({ mutationFn: pledgeDonation, onSuccess: invalidate });
 }
 
 export function useApproveRequest() {

@@ -6,6 +6,7 @@ import { useNotificationLogs } from "@/hooks/useAdmin";
 import { useI18n } from "@/lib/i18n/context";
 import type { NotificationLogFilters } from "@/lib/admin";
 import { RoleGate } from "@/components/layout/role-gate";
+import { PermissionGate } from "@/components/layout/permission-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,6 +36,7 @@ export default function NotificationsPage() {
 
   return (
     <RoleGate roles={["ADMIN"]}>
+      <PermissionGate permission="VIEW_NOTIFICATIONS">
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-zinc-900">{t("notifications.title")}</h1>
@@ -157,6 +159,7 @@ export default function NotificationsPage() {
           )}
         </Card>
       </div>
+      </PermissionGate>
     </RoleGate>
   );
 }

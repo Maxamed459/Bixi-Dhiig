@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { BLOOD_TYPES } from "@/lib/validation";
 import type { AdminDonationFilters } from "@/lib/admin";
 import { RoleGate } from "@/components/layout/role-gate";
+import { PermissionGate } from "@/components/layout/permission-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,7 @@ export default function AdminDonationsPage() {
 
   return (
     <RoleGate roles={["ADMIN"]}>
+      <PermissionGate permission="MANAGE_DONATIONS">
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-zinc-900">{t("donations.title")}</h1>
@@ -211,6 +213,7 @@ export default function AdminDonationsPage() {
           )}
         </Card>
       </div>
+      </PermissionGate>
     </RoleGate>
   );
 }

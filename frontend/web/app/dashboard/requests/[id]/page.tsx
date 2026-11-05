@@ -14,16 +14,19 @@ import {
   useFulfillRequest,
   useRejectRequest,
   useRequestDonations,
+  usePledgeDonation,
   useUpdateDonation,
 } from "@/hooks/useBloodRequests";
 import { useI18n } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Dialog } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { DonationStatusBadge, StatusBadge, UrgencyBadge } from "@/components/requests/badges";
 import { LifecycleTimeline } from "@/components/requests/lifecycle-timeline";
 import { RejectDialog } from "@/components/requests/reject-dialog";
+import { hasPermission } from "@/lib/permissions";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -42,6 +45,8 @@ export default function RequestDetailPage() {
 
   const request = useBloodRequest(id);
   const isAdmin = user?.role === "ADMIN";
+  const canReview = hasPermission(user, "REVIEW_REQUESTS");
+  const canDonate = user?.role === "USER" || (user?.role === "ADMIN" && user.canDonate === true);
   const isOwner = Boolean(user && request.data && request.data.requesterId === user.id);
   // The API only lets the requester or an admin read donor responses (403 otherwise).
   const canManage = isAdmin || isOwner;
@@ -52,9 +57,11 @@ export default function RequestDetailPage() {
   const cancel = useCancelRequest();
   const fulfill = useFulfillRequest();
   const updateDonation = useUpdateDonation();
+  const pledge = usePledgeDonation();
   const [rejecting, setRejecting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [fulfilling, setFulfilling] = useState(false);
+  const [unitsOffered, setUnitsOffered] = useState(1);
 
   if (request.isLoading) {
     return <Loader2 className="h-6 w-6 animate-spin text-red-600" />;
@@ -82,6 +89,14 @@ export default function RequestDetailPage() {
       },
     );
 
+  const onPledge = () => pledge.mutate(
+    { bloodRequestId: r.id, unitsOffered },
+    {
+      onSuccess: () => toast.success(t("detail.donationPledged")),
+      onError: (e) => toast.error(apiError(e, "detail.donationFailed")),
+    },
+  );
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Link href="/dashboard/requests" className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900">
@@ -100,7 +115,7 @@ export default function RequestDetailPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          {isAdmin && r.status === "PENDING" && (
+          {isAdmin && canReview && r.status === "PENDING" && (
             <>
               <Button
                 disabled={approve.isPending}
@@ -119,7 +134,7 @@ export default function RequestDetailPage() {
           {canCancel && (
             <Button variant="outline" onClick={() => setCancelling(true)}>{t("requests.cancel")}</Button>
           )}
-          {isAdmin && r.status === "APPROVED" && (
+          {isAdmin && canReview && r.status === "APPROVED" && (
             <Button variant="outline" onClick={() => setFulfilling(true)}>{t("requests.fulfill")}</Button>
           )}
         </div>
@@ -151,6 +166,22 @@ export default function RequestDetailPage() {
           </dl>
         </CardContent>
       </Card>
+
+      {canDonate && !isOwner && r.status === "APPROVED" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("detail.offerDonation")}</CardTitle>
+            <CardDescription>{t("detail.offerDonationDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-end gap-4">
+            <label className="space-y-1.5 text-sm text-zinc-700">
+              <span className="block font-medium">{t("detail.unitsOffered")}</span>
+              <Input className="w-28" type="number" min={1} max={4} value={unitsOffered} onChange={(event) => setUnitsOffered(Math.min(4, Math.max(1, Number(event.target.value) || 1)))} />
+            </label>
+            <Button onClick={onPledge} disabled={pledge.isPending}>{pledge.isPending ? t("detail.donationSubmitting") : t("detail.offerDonationButton")}</Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

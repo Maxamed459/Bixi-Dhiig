@@ -88,6 +88,11 @@ export async function createBloodRequest(values: CreateRequestFormValues): Promi
   return data(res.data);
 }
 
+export async function pledgeDonation(input: { bloodRequestId: string; unitsOffered: number; notes?: string }): Promise<Donation> {
+  const res = await apiClient.post("/donations", input);
+  return data(res.data);
+}
+
 export async function approveBloodRequest(id: string): Promise<BloodRequest> {
   const res = await apiClient.patch(`/blood-requests/${id}/approve`);
   return data(res.data);

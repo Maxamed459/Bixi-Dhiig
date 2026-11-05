@@ -18,6 +18,8 @@ export interface User {
   role: UserRole;
   isSuperAdmin?: boolean;
   permissions?: AdminPermission[];
+  canDonate?: boolean;
+  canRequest?: boolean;
   avater?: string | null;
   phone?: string | null;
   city?: string | null;

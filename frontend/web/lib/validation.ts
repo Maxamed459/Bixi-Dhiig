@@ -68,6 +68,10 @@ export const adminUserFormSchema = z.object({
   hospitalName: z.string().trim(),
   licenseNumber: z.string().trim(),
   address: z.string().trim(),
+  permissions: z.array(z.enum(["MANAGE_USERS", "REVIEW_REQUESTS", "MANAGE_DONATIONS", "VIEW_NOTIFICATIONS"])),
+  isSuperAdmin: z.boolean(),
+  canDonate: z.boolean(),
+  canRequest: z.boolean(),
 });
 export type AdminUserFormValues = z.infer<typeof adminUserFormSchema>;
 

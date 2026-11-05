@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { StatusBadge, UrgencyBadge } from "@/components/requests/badges";
 import { RejectDialog } from "@/components/requests/reject-dialog";
+import { hasPermission } from "@/lib/permissions";
 
 const STATUSES: RequestStatus[] = ["PENDING", "APPROVED", "REJECTED", "FULFILLED", "CANCELLED"];
 
@@ -26,6 +27,8 @@ export default function RequestsPage() {
   const { t, formatDateTime } = useI18n();
   const apiError = useApiError();
   const isAdmin = user?.role === "ADMIN";
+  const canReview = hasPermission(user, "REVIEW_REQUESTS");
+  const canCreateRequest = user?.role === "HOSPITAL" || (user?.role === "ADMIN" && user.canRequest === true);
 
   // Admins land on the approval queue; everyone else sees every visible request.
   const [filters, setFilters] = useState<RequestFilters>({
@@ -73,7 +76,7 @@ export default function RequestsPage() {
           <h1 className="text-2xl font-semibold text-zinc-900">{t("requests.title")}</h1>
           <p className="text-sm text-zinc-500">{isAdmin ? t("requests.subtitleAdmin") : t("requests.subtitleHospital")}</p>
         </div>
-        {user?.role === "HOSPITAL" && (
+        {canCreateRequest && (
           <Button asChild>
             <Link href="/dashboard/requests/new">
               <Plus className="h-4 w-4" />
@@ -171,7 +174,7 @@ export default function RequestsPage() {
                   <TD className="whitespace-nowrap text-xs text-zinc-500">{formatDateTime(r.createdAt)}</TD>
                   <TD>
                     <div className="flex justify-end gap-2">
-                      {isAdmin && r.status === "PENDING" && (
+                      {isAdmin && canReview && r.status === "PENDING" && (
                         <>
                           <Button size="sm" onClick={() => onApprove(r.id)} disabled={approve.isPending}>
                             {t("requests.approve")}

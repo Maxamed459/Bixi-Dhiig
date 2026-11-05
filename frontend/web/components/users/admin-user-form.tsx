@@ -9,6 +9,7 @@ import { FormFieldWrapper } from "@/components/ui/form-field";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useT } from "@/lib/i18n/context";
 import { BLOOD_TYPES, USER_ROLES, adminUserFormSchema, type AdminUserFormValues } from "@/lib/validation";
+import { ADMIN_PERMISSIONS } from "@/lib/types";
 
 export const EMPTY_ADMIN_USER_FORM: AdminUserFormValues = {
   display_name: "",
@@ -24,6 +25,10 @@ export const EMPTY_ADMIN_USER_FORM: AdminUserFormValues = {
   hospitalName: "",
   licenseNumber: "",
   address: "",
+  permissions: [],
+  isSuperAdmin: false,
+  canDonate: true,
+  canRequest: true,
 };
 
 interface AdminUserFormProps {
@@ -31,9 +36,10 @@ interface AdminUserFormProps {
   defaultValues?: Partial<AdminUserFormValues>;
   submitting?: boolean;
   onSubmit: (values: AdminUserFormValues) => void;
+  adminMode?: boolean;
 }
 
-export function AdminUserForm({ mode, defaultValues, submitting, onSubmit }: AdminUserFormProps) {
+export function AdminUserForm({ mode, defaultValues, submitting, onSubmit, adminMode = false }: AdminUserFormProps) {
   const t = useT();
   const {
     register,
@@ -81,8 +87,8 @@ export function AdminUserForm({ mode, defaultValues, submitting, onSubmit }: Adm
           </FormFieldWrapper>
 
           <FormFieldWrapper label={t("users.form.role")} htmlFor="role" error={errors.role?.message}>
-            <NativeSelect id="role" {...register("role")}>
-              {USER_ROLES.map((roleOption) => (
+            <NativeSelect id="role" disabled={adminMode} {...register("role")}>
+              {(adminMode ? (["ADMIN"] as const) : USER_ROLES.filter((roleOption) => roleOption !== "ADMIN")).map((roleOption) => (
                 <option key={roleOption} value={roleOption}>{t(`roles.${roleOption}`)}</option>
               ))}
             </NativeSelect>
@@ -130,6 +136,50 @@ export function AdminUserForm({ mode, defaultValues, submitting, onSubmit }: Adm
             <FormFieldWrapper className="sm:col-span-2" label={t("users.form.address")} htmlFor="address" error={errors.address?.message}>
               <Input id="address" {...register("address")} />
             </FormFieldWrapper>
+          </CardContent>
+        </Card>
+      )}
+
+      {adminMode && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("users.form.permissions")}</CardTitle>
+            <CardDescription>{t("users.form.permissionsDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <label className="flex items-start gap-3 text-sm text-zinc-700">
+              <input type="checkbox" className="mt-0.5 rounded border-zinc-300" {...register("isSuperAdmin")} />
+              <span>
+                <span className="font-medium text-zinc-900">{t("users.form.superAdmin")}</span>
+                <span className="block text-xs text-zinc-500">{t("users.form.superAdminHint")}</span>
+              </span>
+            </label>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {ADMIN_PERMISSIONS.map((permission) => (
+                <label key={permission} className="flex items-center gap-3 text-sm text-zinc-700">
+                  <input
+                    type="checkbox"
+                    value={permission}
+                    className="rounded border-zinc-300"
+                    {...register("permissions")}
+                  />
+                  {t(`permissions.${permission}`)}
+                </label>
+              ))}
+            </div>
+            <div className="border-t border-zinc-100 pt-3">
+              <p className="mb-2 text-sm font-medium text-zinc-900">{t("users.form.basicCapabilities")}</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <label className="flex items-start gap-3 text-sm text-zinc-700">
+                  <input type="checkbox" className="mt-0.5 rounded border-zinc-300" {...register("canDonate")} />
+                  <span><span className="font-medium text-zinc-900">{t("users.form.canDonate")}</span><span className="block text-xs text-zinc-500">{t("users.form.canDonateHint")}</span></span>
+                </label>
+                <label className="flex items-start gap-3 text-sm text-zinc-700">
+                  <input type="checkbox" className="mt-0.5 rounded border-zinc-300" {...register("canRequest")} />
+                  <span><span className="font-medium text-zinc-900">{t("users.form.canRequest")}</span><span className="block text-xs text-zinc-500">{t("users.form.canRequestHint")}</span></span>
+                </label>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}

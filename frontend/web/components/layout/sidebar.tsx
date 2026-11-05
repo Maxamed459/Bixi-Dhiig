@@ -12,6 +12,7 @@ import {
   PlusCircle,
   UserRound,
   Users,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,6 +20,8 @@ import { useT } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import type { UserRole } from "@/lib/types";
+import type { AdminPermission } from "@/lib/types";
+import { hasPermission } from "@/lib/permissions";
 
 interface NavItem {
   href: string;
@@ -27,15 +30,19 @@ interface NavItem {
   /** Exact-match highlight (otherwise: prefix match, minus the "new" sub-route for Requests). */
   exact?: boolean;
   roles?: UserRole[];
+  permission?: AdminPermission;
+  capability?: "canDonate" | "canRequest";
 }
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/requests", labelKey: "nav.requests", icon: ClipboardList },
   { href: "/dashboard/requests/new", labelKey: "nav.newRequest", icon: PlusCircle, exact: true, roles: ["HOSPITAL"] },
-  { href: "/dashboard/users", labelKey: "nav.users", icon: Users, roles: ["ADMIN"] },
-  { href: "/dashboard/donations", labelKey: "nav.donations", icon: HeartHandshake, exact: true, roles: ["ADMIN"] },
-  { href: "/dashboard/notifications", labelKey: "nav.notifications", icon: BellRing, exact: true, roles: ["ADMIN"] },
+  { href: "/dashboard/requests/new", labelKey: "nav.newRequest", icon: PlusCircle, exact: true, roles: ["ADMIN"], capability: "canRequest" },
+  { href: "/dashboard/users", labelKey: "nav.users", icon: Users, roles: ["ADMIN"], permission: "MANAGE_USERS" },
+  { href: "/dashboard/admins", labelKey: "nav.admins", icon: ShieldCheck, roles: ["ADMIN"] },
+  { href: "/dashboard/donations", labelKey: "nav.donations", icon: HeartHandshake, exact: true, roles: ["ADMIN"], permission: "MANAGE_DONATIONS" },
+  { href: "/dashboard/notifications", labelKey: "nav.notifications", icon: BellRing, exact: true, roles: ["ADMIN"], permission: "VIEW_NOTIFICATIONS" },
   { href: "/dashboard/profile", labelKey: "nav.profile", icon: UserRound, exact: true },
 ];
 
@@ -92,7 +99,12 @@ export function Sidebar({ collapsed }: { collapsed: boolean }) {
           collapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden",
         )}
       >
-        {NAV_ITEMS.filter((item) => !item.roles || (user && item.roles.includes(user.role))).map((item) => {
+        {NAV_ITEMS.filter((item) =>
+          (!item.roles || (user && item.roles.includes(user.role))) &&
+          (!item.permission || hasPermission(user, item.permission)) &&
+          (!item.capability || user?.[item.capability] === true) &&
+          (item.href !== "/dashboard/admins" || user?.isSuperAdmin)
+        ).map((item) => {
           const Icon = item.icon;
           const label = t(item.labelKey);
           return (
