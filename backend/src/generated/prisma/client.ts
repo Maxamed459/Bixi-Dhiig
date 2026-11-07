@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model UserNotification
+ * 
+ */
+export type UserNotification = Prisma.UserNotificationModel
+/**
  * Model OauthAccount
  * 
  */
