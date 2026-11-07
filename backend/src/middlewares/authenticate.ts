@@ -42,6 +42,13 @@ export const authenticate = async (
       },
     });
 
+    if (!user || user.is_deleted || !user.active) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token",
+      });
+    }
+
     req.user = user;
 
     next();
