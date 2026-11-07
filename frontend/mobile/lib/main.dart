@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'controllers/auth_controller.dart';
 import 'controllers/locale_controller.dart';
+import 'controllers/theme_controller.dart';
 import 'core/theme.dart';
 import 'l10n/fallback_delegates.dart';
 import 'l10n/translations.dart';
@@ -17,6 +18,7 @@ Future<void> main() async {
   await initializeDateFormatting();
   final prefs = await SharedPreferences.getInstance();
   Get.put(LocaleController(prefs), permanent: true);
+  Get.put(ThemeController(prefs), permanent: true);
   Get.put(AuthController(), permanent: true);
 
   runApp(
@@ -30,23 +32,26 @@ class BixiDhiigApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = Get.find<LocaleController>().locale;
-    return GetMaterialApp(
-      title: 'Bixi-Dhiig',
-      debugShowCheckedModeBanner: false,
-      translations: AppTranslations(),
-      locale: locale,
-      fallbackLocale: const Locale('en'),
-      supportedLocales: [
-        for (final l in AppTranslations.supported) Locale(l['code']!),
-      ],
-      localizationsDelegates: appLocalizationDelegates,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
-      useInheritedMediaQuery: true,
-      builder: DevicePreview.appBuilder,
-      home: const SplashScreen(),
-    );
+    return Obx(() {
+      final locale = Get.find<LocaleController>().locale;
+      final themeMode = Get.find<ThemeController>().themeMode;
+      return GetMaterialApp(
+        title: 'Bixi-Dhiig',
+        debugShowCheckedModeBanner: false,
+        translations: AppTranslations(),
+        locale: locale,
+        fallbackLocale: const Locale('en'),
+        supportedLocales: [
+          for (final l in AppTranslations.supported) Locale(l['code']!),
+        ],
+        localizationsDelegates: appLocalizationDelegates,
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: themeMode,
+        useInheritedMediaQuery: true,
+        // builder: DevicePreview.appBuilder,
+        home: const SplashScreen(),
+      );
+    });
   }
 }
