@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../controllers/auth_controller.dart';
 import '../controllers/requests_controller.dart';
+import '../controllers/nav_controller.dart';
 import '../core/constants.dart';
 import '../core/theme.dart';
 import '../core/utils.dart';
@@ -61,6 +62,12 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     if (!valid || _bloodType == null) return;
 
     setState(() => _submitting = true);
+    if (await requests.hasActiveRequest()) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      Toast.error('active_request_exists'.tr);
+      return;
+    }
     final body = <String, dynamic>{
       'patientName': _patient.text.trim(),
       'bloodType': _bloodType,
@@ -76,7 +83,10 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     final ok = await requests.create(body);
     if (!mounted) return;
     setState(() => _submitting = false);
-    if (ok) Get.back();
+    if (ok) {
+      Get.back();
+      Get.find<NavController>().index.value = 1;
+    }
   }
 
   @override
