@@ -10,6 +10,8 @@ import '../core/utils.dart';
 import '../widgets/request_card.dart';
 import 'create_request_screen.dart';
 import 'request_detail_screen.dart';
+import '../controllers/notifications_controller.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,11 +22,12 @@ class HomeScreen extends StatelessWidget {
     final requests = Get.find<RequestsController>();
     final activity = Get.find<ActivityController>();
     final nav = Get.find<NavController>();
+    final notifications = Get.find<NotificationsController>();
 
     return RefreshIndicator(
       color: AppColors.primary,
       onRefresh: () async {
-        await Future.wait([requests.load(), activity.load()]);
+        await Future.wait([requests.load(), activity.load(), notifications.load()]);
       },
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -53,6 +56,15 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                Obx(() => IconButton(
+                      tooltip: 'notifications'.tr,
+                      onPressed: () => Get.to(() => const NotificationsScreen()),
+                      icon: Badge(
+                        isLabelVisible: notifications.unreadCount > 0,
+                        label: Text('${notifications.unreadCount}'),
+                        child: const Icon(Icons.notifications_none),
+                      ),
+                    )),
               ],
             );
           }),
