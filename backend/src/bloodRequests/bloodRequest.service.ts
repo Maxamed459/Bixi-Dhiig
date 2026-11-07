@@ -13,6 +13,18 @@ export const createBloodRequest = async (
   input: CreateBloodRequestInput,
   requester: RequestingUser,
 ) => {
+  const activeRequest = await prisma.bloodRequest.findFirst({
+    where: {
+      requesterId: requester.id,
+      status: { in: ["PENDING", "APPROVED"] },
+    },
+    select: { id: true },
+  });
+
+  if (activeRequest) {
+    throw new AppError(409, "You already have an active blood request.");
+  }
+
   // Business rule: a HOSPITAL is already vetted by an admin at account-creation time,
   // so its requests go live immediately. A USER's request needs admin approval first.
   const isHospital = requester.role === "HOSPITAL";
