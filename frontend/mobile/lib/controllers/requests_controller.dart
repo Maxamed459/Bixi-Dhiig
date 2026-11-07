@@ -101,4 +101,13 @@ class RequestsController extends GetxController {
     load();
     return true;
   }
+
+  Future<bool> hasActiveRequest() async {
+    final r = await _api.get('/blood-requests/mine');
+    if (!r.success || r.data is! List) return false;
+    return (r.data as List).whereType<Map>().any((item) {
+      final status = item['status']?.toString();
+      return status == 'PENDING' || status == 'APPROVED';
+    });
+  }
 }
