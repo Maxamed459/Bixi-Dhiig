@@ -21,7 +21,6 @@ import { dateLocale } from "@/lib/i18n";
 import { BLOOD_TYPES } from "@/lib/validation";
 import type { BloodType, RequestStatus } from "@/lib/blood-requests";
 import type { UserRole } from "@/lib/types";
-import { hasPermission } from "@/lib/permissions";
 import {
   Card,
   CardHeader,
@@ -129,7 +128,6 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { t, formatDateTime, locale } = useI18n();
   const isAdmin = user?.role === "ADMIN";
-  const canManageUsers = hasPermission(user, "MANAGE_USERS");
   const adminView = !isAdmin;
 
   // Hospital overview (also used as a fallback while admin stats load).
@@ -230,7 +228,7 @@ export default function DashboardPage() {
           {user?.role && (
             <Badge variant="secondary">{t(`roles.${user.role}`)}</Badge>
           )}
-          {isAdmin && canManageUsers && (
+          {isAdmin && (
             <Button asChild size="sm">
               <Link href="/dashboard/users">
                 <Users className="h-4 w-4" />
@@ -410,7 +408,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            {canManageUsers && <Card>
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div className="space-y-1.5">
                   <CardTitle>{t("dashboard.recentUsers")}</CardTitle>
@@ -463,7 +461,7 @@ export default function DashboardPage() {
                   </p>
                 )}
               </CardContent>
-            </Card>}
+            </Card>
           </div>
 
           <Card>
