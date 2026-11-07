@@ -11,6 +11,7 @@ import {
 import { getBloodRequestById } from "../bloodRequests/bloodRequest.service.js";
 import type { CreateDonationInput, UpdateDonationStatusInput } from "./donation.validation.js";
 import { notifyWhatsApp } from "../services/whatsapp/notification.service.js";
+import { createUserNotification } from "../notifications/notification.service.js";
 import {
   donationAcceptedMessage,
   donationCompletedMessage,
@@ -42,6 +43,14 @@ export const pledgeDonationHandler = async (req: Request, res: Response) => {
         text: donorPledgedMessage(donation.bloodRequest, donation.donor.display_name),
       });
     }
+
+    void createUserNotification({
+      userId: donation.bloodRequest.requesterId,
+      type: "DONATION_PLEDGED",
+      title: "A donor responded to your request",
+      body: `${donation.donor.display_name} offered ${donation.unitsOffered} unit(s) of blood.`,
+      data: { requestId: donation.bloodRequestId, donationId: donation.id },
+    });
 
     return res.status(201).json({
       success: true,
@@ -91,6 +100,16 @@ export const updateDonationStatusHandler = async (req: Request, res: Response) =
         phone: donation.donor.phone,
         event: "donation_accepted",
         text: donationAcceptedMessage(donation.bloodRequest, donation.scheduledAt),
+      });
+    }
+
+    if (input.status === "ACCEPTED") {
+      void createUserNotification({
+        userId: donation.donorId,
+        type: "DONATION_ACCEPTED",
+        title: "Your donation was accepted",
+        body: `Your donation offer for ${donation.bloodRequest.patientName} was accepted.`,
+        data: { requestId: donation.bloodRequestId, donationId: donation.id },
       });
     }
 
