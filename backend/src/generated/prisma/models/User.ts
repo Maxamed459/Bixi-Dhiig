@@ -296,6 +296,7 @@ export type UserWhereInput = {
   approvedRequests?: Prisma.BloodRequestListRelationFilter
   donations?: Prisma.DonationListRelationFilter
   confirmedDonations?: Prisma.DonationListRelationFilter
+  notifications?: Prisma.UserNotificationListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -324,6 +325,7 @@ export type UserOrderByWithRelationInput = {
   approvedRequests?: Prisma.BloodRequestOrderByRelationAggregateInput
   donations?: Prisma.DonationOrderByRelationAggregateInput
   confirmedDonations?: Prisma.DonationOrderByRelationAggregateInput
+  notifications?: Prisma.UserNotificationOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -355,6 +357,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   approvedRequests?: Prisma.BloodRequestListRelationFilter
   donations?: Prisma.DonationListRelationFilter
   confirmedDonations?: Prisma.DonationListRelationFilter
+  notifications?: Prisma.UserNotificationListRelationFilter
 }, "id" | "email" | "phone">
 
 export type UserOrderByWithAggregationInput = {
@@ -433,6 +436,7 @@ export type UserCreateInput = {
   approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -461,6 +465,7 @@ export type UserUncheckedCreateInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -489,6 +494,7 @@ export type UserUpdateInput = {
   approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -517,6 +523,7 @@ export type UserUncheckedUpdateInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -704,6 +711,20 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type UserCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.UserUpsertWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
 export type UserCreateNestedOneWithoutOauthAccountsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutOauthAccountsInput, Prisma.UserUncheckedCreateWithoutOauthAccountsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutOauthAccountsInput
@@ -792,6 +813,134 @@ export type UserUpdateOneWithoutConfirmedDonationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutConfirmedDonationsInput, Prisma.UserUpdateWithoutConfirmedDonationsInput>, Prisma.UserUncheckedUpdateWithoutConfirmedDonationsInput>
 }
 
+export type UserCreateWithoutNotificationsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  isSuperAdmin?: boolean
+  permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserUncheckedCreateWithoutNotificationsInput = {
+  id?: string
+  display_name: string
+  email: string
+  phone?: string | null
+  avater?: string | null
+  role?: $Enums.Role
+  isSuperAdmin?: boolean
+  permissions?: Prisma.UserCreatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: boolean
+  canRequest?: boolean
+  bloodType?: $Enums.BloodType | null
+  city?: string | null
+  receiveAlerts?: boolean
+  last_login_at?: Date | string | null
+  is_email_verified: boolean
+  active?: boolean
+  is_deleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedCreateNestedManyWithoutUserInput
+  hospital?: Prisma.HospitalUncheckedCreateNestedOneWithoutUserInput
+  bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
+  approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+}
+
+export type UserCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+}
+
+export type UserUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type UserUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avater?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  permissions?: Prisma.UserUpdatepermissionsInput | $Enums.AdminPermission[]
+  canDonate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  canRequest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiveAlerts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_email_verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oauthAccounts?: Prisma.OauthAccountUncheckedUpdateManyWithoutUserNestedInput
+  hospital?: Prisma.HospitalUncheckedUpdateOneWithoutUserNestedInput
+  bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+}
+
 export type UserCreateWithoutOauthAccountsInput = {
   id?: string
   display_name: string
@@ -817,6 +966,7 @@ export type UserCreateWithoutOauthAccountsInput = {
   approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOauthAccountsInput = {
@@ -844,6 +994,7 @@ export type UserUncheckedCreateWithoutOauthAccountsInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOauthAccountsInput = {
@@ -887,6 +1038,7 @@ export type UserUpdateWithoutOauthAccountsInput = {
   approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOauthAccountsInput = {
@@ -914,6 +1066,7 @@ export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutHospitalInput = {
@@ -941,6 +1094,7 @@ export type UserCreateWithoutHospitalInput = {
   approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHospitalInput = {
@@ -968,6 +1122,7 @@ export type UserUncheckedCreateWithoutHospitalInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHospitalInput = {
@@ -1011,6 +1166,7 @@ export type UserUpdateWithoutHospitalInput = {
   approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHospitalInput = {
@@ -1038,6 +1194,7 @@ export type UserUncheckedUpdateWithoutHospitalInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBloodRequestsInput = {
@@ -1065,6 +1222,7 @@ export type UserCreateWithoutBloodRequestsInput = {
   approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBloodRequestsInput = {
@@ -1092,6 +1250,7 @@ export type UserUncheckedCreateWithoutBloodRequestsInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBloodRequestsInput = {
@@ -1124,6 +1283,7 @@ export type UserCreateWithoutApprovedRequestsInput = {
   bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
   donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutApprovedRequestsInput = {
@@ -1151,6 +1311,7 @@ export type UserUncheckedCreateWithoutApprovedRequestsInput = {
   bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
   confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutApprovedRequestsInput = {
@@ -1194,6 +1355,7 @@ export type UserUpdateWithoutBloodRequestsInput = {
   approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBloodRequestsInput = {
@@ -1221,6 +1383,7 @@ export type UserUncheckedUpdateWithoutBloodRequestsInput = {
   approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutApprovedRequestsInput = {
@@ -1259,6 +1422,7 @@ export type UserUpdateWithoutApprovedRequestsInput = {
   bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
   donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApprovedRequestsInput = {
@@ -1286,6 +1450,7 @@ export type UserUncheckedUpdateWithoutApprovedRequestsInput = {
   bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
   confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDonationsInput = {
@@ -1313,6 +1478,7 @@ export type UserCreateWithoutDonationsInput = {
   bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
   approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
   confirmedDonations?: Prisma.DonationCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDonationsInput = {
@@ -1340,6 +1506,7 @@ export type UserUncheckedCreateWithoutDonationsInput = {
   bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
   approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
   confirmedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutConfirmedByInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDonationsInput = {
@@ -1372,6 +1539,7 @@ export type UserCreateWithoutConfirmedDonationsInput = {
   bloodRequests?: Prisma.BloodRequestCreateNestedManyWithoutRequesterInput
   approvedRequests?: Prisma.BloodRequestCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConfirmedDonationsInput = {
@@ -1399,6 +1567,7 @@ export type UserUncheckedCreateWithoutConfirmedDonationsInput = {
   bloodRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutRequesterInput
   approvedRequests?: Prisma.BloodRequestUncheckedCreateNestedManyWithoutApprovedByInput
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConfirmedDonationsInput = {
@@ -1442,6 +1611,7 @@ export type UserUpdateWithoutDonationsInput = {
   bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
   approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
   confirmedDonations?: Prisma.DonationUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDonationsInput = {
@@ -1469,6 +1639,7 @@ export type UserUncheckedUpdateWithoutDonationsInput = {
   bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
   approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
   confirmedDonations?: Prisma.DonationUncheckedUpdateManyWithoutConfirmedByNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutConfirmedDonationsInput = {
@@ -1507,6 +1678,7 @@ export type UserUpdateWithoutConfirmedDonationsInput = {
   bloodRequests?: Prisma.BloodRequestUpdateManyWithoutRequesterNestedInput
   approvedRequests?: Prisma.BloodRequestUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConfirmedDonationsInput = {
@@ -1534,6 +1706,7 @@ export type UserUncheckedUpdateWithoutConfirmedDonationsInput = {
   bloodRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutRequesterNestedInput
   approvedRequests?: Prisma.BloodRequestUncheckedUpdateManyWithoutApprovedByNestedInput
   donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1547,6 +1720,7 @@ export type UserCountOutputType = {
   approvedRequests: number
   donations: number
   confirmedDonations: number
+  notifications: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1555,6 +1729,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   approvedRequests?: boolean | UserCountOutputTypeCountApprovedRequestsArgs
   donations?: boolean | UserCountOutputTypeCountDonationsArgs
   confirmedDonations?: boolean | UserCountOutputTypeCountConfirmedDonationsArgs
+  notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
 }
 
 /**
@@ -1602,6 +1777,13 @@ export type UserCountOutputTypeCountConfirmedDonationsArgs<ExtArgs extends runti
   where?: Prisma.DonationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserNotificationWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1629,6 +1811,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   approvedRequests?: boolean | Prisma.User$approvedRequestsArgs<ExtArgs>
   donations?: boolean | Prisma.User$donationsArgs<ExtArgs>
   confirmedDonations?: boolean | Prisma.User$confirmedDonationsArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1706,6 +1889,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   approvedRequests?: boolean | Prisma.User$approvedRequestsArgs<ExtArgs>
   donations?: boolean | Prisma.User$donationsArgs<ExtArgs>
   confirmedDonations?: boolean | Prisma.User$confirmedDonationsArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1720,6 +1904,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     approvedRequests: Prisma.$BloodRequestPayload<ExtArgs>[]
     donations: Prisma.$DonationPayload<ExtArgs>[]
     confirmedDonations: Prisma.$DonationPayload<ExtArgs>[]
+    notifications: Prisma.$UserNotificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2141,6 +2326,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   approvedRequests<T extends Prisma.User$approvedRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BloodRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   donations<T extends Prisma.User$donationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$donationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   confirmedDonations<T extends Prisma.User$confirmedDonationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$confirmedDonationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2718,6 +2904,30 @@ export type User$confirmedDonationsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.DonationScalarFieldEnum | Prisma.DonationScalarFieldEnum[]
+}
+
+/**
+ * User.notifications
+ */
+export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserNotification
+   */
+  select?: Prisma.UserNotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserNotification
+   */
+  omit?: Prisma.UserNotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserNotificationInclude<ExtArgs> | null
+  where?: Prisma.UserNotificationWhereInput
+  orderBy?: Prisma.UserNotificationOrderByWithRelationInput | Prisma.UserNotificationOrderByWithRelationInput[]
+  cursor?: Prisma.UserNotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserNotificationScalarFieldEnum | Prisma.UserNotificationScalarFieldEnum[]
 }
 
 /**
