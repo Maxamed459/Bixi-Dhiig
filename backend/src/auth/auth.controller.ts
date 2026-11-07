@@ -358,6 +358,14 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
+    // Keep deleted/inactive accounts indistinguishable from invalid credentials.
+    if (user.is_deleted || !user.active) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
     const hashedPassword = await findUserByIdWithHashPassword(user.id);
 
     const isPasswordCorrect = await bcrypt.compare(password, hashedPassword!);
@@ -483,6 +491,14 @@ export const createNewAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({
         success: false,
         message: "user not found",
+      });
+    }
+
+    if (user.is_deleted || !user.active) {
+      await client.del(rediskey);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token",
       });
     }
 
@@ -715,6 +731,13 @@ export const mobileGoogleOauth = async (req: Request, res: Response) => {
       "USER",
     );
 
+    if (user.is_deleted || !user.active) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Google ID token",
+      });
+    }
+
     if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
       throw new Error("JWT_SECRETS is not available please provide it");
     }
@@ -784,6 +807,10 @@ export const googleOauthCalback = async (req: Request, res: Response) => {
       name: profile.name!,
       picture: profile.picture!,
     });
+
+    if (user.is_deleted || !user.active) {
+      return redirectToFrontendLogin(res, "account_unavailable");
+    }
 
     if (!JWT_ACCESS_SECRET && !JWT_REFRESH_SECRET) {
       throw new Error("JWT_SECRETS is not available please provide it");
