@@ -14,6 +14,11 @@ class AppTranslations extends Translations {
   static const Map<String, String> _en = {
     'app_name': 'Bixi-Dhiig',
     'language': 'Language',
+    'theme': 'Theme',
+    'theme_system': 'Use device setting',
+    'theme_light': 'Light',
+    'theme_dark': 'Dark',
+    'active_request_exists': 'You already have an active blood request.',
     'cancel': 'Cancel',
     'confirm': 'Confirm',
     'save': 'Save',
@@ -63,6 +68,9 @@ class AppTranslations extends Translations {
     'nav_home': 'Home',
     'nav_requests': 'Requests',
     'nav_activity': 'Activity',
+    'notifications': 'Notifications',
+    'mark_all_read': 'Mark all read',
+    'no_notifications': 'No notifications yet',
     'nav_profile': 'Profile',
 
     // Home
@@ -171,6 +179,11 @@ class AppTranslations extends Translations {
   static const Map<String, String> _so = {
     'app_name': 'Bixi-Dhiig',
     'language': 'Luuqadda',
+    'theme': 'Muuqaalka',
+    'theme_system': 'Isticmaal dejinta telefoonka',
+    'theme_light': 'Iftiin',
+    'theme_dark': 'Madow',
+    'active_request_exists': 'Waxaad hore u leedahay codsi dhiig oo furan.',
     'cancel': 'Jooji',
     'confirm': 'Xaqiiji',
     'save': 'Kaydi',
@@ -220,6 +233,9 @@ class AppTranslations extends Translations {
     'nav_home': 'Hoyga',
     'nav_requests': 'Codsiyada',
     'nav_activity': 'Dhaqdhaqaaq',
+    'notifications': 'Ogeysiisyada',
+    'mark_all_read': 'Dhammaan akhri',
+    'no_notifications': 'Weli ogeysiis ma jiro',
     'nav_profile': 'Xisaabkayga',
 
     // Home
