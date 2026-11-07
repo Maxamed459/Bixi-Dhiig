@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobile/controllers/auth_controller.dart';
 
 import '../controllers/activity_controller.dart';
 import '../controllers/nav_controller.dart';
@@ -9,6 +10,8 @@ import 'create_request_screen.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'requests_screen.dart';
+import '../controllers/notifications_controller.dart';
+import '../services/push_notification_service.dart';
 
 /// Bottom-navigation container for the signed-in donor/requester.
 class ShellScreen extends StatefulWidget {
@@ -27,13 +30,19 @@ class _ShellScreenState extends State<ShellScreen> {
     nav = Get.put(NavController());
     Get.put(RequestsController());
     Get.put(ActivityController());
+    Get.put(NotificationsController());
+    PushNotificationService.instance.initialize().then((_) {
+      final userId = Get.find<AuthController>().user.value?.id;
+      if (userId != null) PushNotificationService.instance.identifyUser(userId);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final i = nav.index.value;
-      final canRequest = Get.find<AuthController>().user.value?.canRequest == true;
+      final canRequest =
+          Get.find<AuthController>().user.value?.canRequest == true;
       return Scaffold(
         body: SafeArea(
           child: IndexedStack(
