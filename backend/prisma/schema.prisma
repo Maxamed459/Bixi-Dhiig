@@ -70,9 +70,26 @@ model User {
   approvedRequests  BloodRequest[] @relation("ApprovedBy")
   donations         Donation[]     @relation("DonatedBy")
   confirmedDonations Donation[]    @relation("ConfirmedBy")
+  notifications      UserNotification[]
 
   @@index([role])
   @@index([bloodType, city])
+}
+
+model UserNotification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  type      String
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
 }
 
 enum AuthProvider {
