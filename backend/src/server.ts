@@ -10,6 +10,7 @@ import bloodRequestRouter from "./bloodRequests/bloodRequest.routes.js";
 import donationRouter from "./donations/donation.routes.js";
 import userRouter from "./users/user.routes.js";
 import adminRouter from "./admin/admin.routes.js";
+import notificationRouter from "./notifications/notification.routes.js";
 import { initRedisclient } from "./lib/redis.js";
 
 const app = express();
@@ -54,6 +55,7 @@ app.use("/api/v1/blood-requests", bloodRequestRouter);
 app.use("/api/v1/donations", donationRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/notifications", notificationRouter);
 
 await initRedisclient();
 app.listen(PORT, () => {
