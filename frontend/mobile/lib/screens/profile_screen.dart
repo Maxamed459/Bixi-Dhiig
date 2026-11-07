@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/auth_controller.dart';
+import '../controllers/theme_controller.dart';
 import '../core/theme.dart';
 import '../core/utils.dart';
 import '../widgets/app_button.dart';
@@ -152,6 +153,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(width: double.infinity, child: LanguageSwitcher()),
             ],
           ),
+        ),
+        const SizedBox(height: 16),
+        AppCard(
+          child: Obx(() {
+            final themes = Get.find<ThemeController>();
+            return DropdownButtonFormField<String>(
+              value: themes.mode.value,
+              decoration: InputDecoration(
+                labelText: 'theme'.tr,
+                prefixIcon: const Icon(Icons.palette_outlined),
+                border: InputBorder.none,
+              ),
+              items: [
+                DropdownMenuItem(value: 'system', child: Text('theme_system'.tr)),
+                DropdownMenuItem(value: 'light', child: Text('theme_light'.tr)),
+                DropdownMenuItem(value: 'dark', child: Text('theme_dark'.tr)),
+              ],
+              onChanged: (value) {
+                if (value != null) themes.change(value);
+              },
+            );
+          }),
         ),
         const SizedBox(height: 16),
         AppButton(
