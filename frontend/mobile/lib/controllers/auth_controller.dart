@@ -14,6 +14,7 @@ import '../screens/web_only_screen.dart';
 import 'activity_controller.dart';
 import 'nav_controller.dart';
 import 'requests_controller.dart';
+import '../services/push_notification_service.dart';
 
 class AuthController extends GetxController {
   final ApiClient _api = ApiClient.instance;
@@ -57,7 +58,7 @@ class AuthController extends GetxController {
     final u = user.value;
     if (u == null) {
       Get.offAll(() => const LoginScreen());
-    } else if (u.role != 'USER' && !u.canDonate && !u.canRequest) {
+    } else if (u.role != 'USER') {
       Get.offAll(() => const WebOnlyScreen());
     } else if (!u.isEmailVerified) {
       Get.offAll(() => const VerifyEmailScreen());
@@ -74,6 +75,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> _clearLocal() async {
+    await PushNotificationService.instance.clearUser();
     await TokenStorage.clear();
     user.value = null;
     if (Get.isRegistered<RequestsController>()) Get.delete<RequestsController>(force: true);
