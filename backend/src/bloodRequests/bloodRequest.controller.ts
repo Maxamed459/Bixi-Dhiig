@@ -18,6 +18,7 @@ import type {
   ListBloodRequestsQuery,
 } from "./bloodRequest.validation.js";
 import { notifyManyWhatsApp, notifyWhatsApp } from "../services/whatsapp/notification.service.js";
+import { createUserNotification, createUserNotifications } from "../notifications/notification.service.js";
 import {
   adminApprovalNeededMessage,
   donorAlertMessage,
@@ -28,6 +29,12 @@ import {
 
 const handleError = (res: Response, error: unknown) => {
   logger.info(error);
+  if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
+    return res.status(409).json({
+      success: false,
+      message: "You already have an active blood request.",
+    });
+  }
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({ success: false, message: error.message });
   }
@@ -46,13 +53,22 @@ export const createBloodRequestHandler = async (req: Request, res: Response) => 
 
     // Fire WhatsApp notifications without blocking the response on delivery.
     if (request.status === "APPROVED") {
-      void findMatchingDonors(request.bloodType, request.city).then((donors) =>
-        notifyManyWhatsApp(
-          donors.map((d) => ({ userId: d.id, phone: d.phone! })),
-          "blood_request_live",
-          donorAlertMessage(request),
-        ),
-      );
+      void findMatchingDonors(request.bloodType, request.city).then(async (donors) => {
+        await Promise.all([
+          notifyManyWhatsApp(
+            donors.map((d) => ({ userId: d.id, phone: d.phone! })),
+            "blood_request_live",
+            donorAlertMessage(request),
+          ),
+          createUserNotifications(donors.map((d) => ({
+            userId: d.id,
+            type: "BLOOD_REQUEST_LIVE",
+            title: "New blood request nearby",
+            body: `${request.patientName} needs ${request.bloodType} blood in ${request.city}.`,
+            data: { requestId: request.id },
+          }))),
+        ]);
+      });
     } else {
       void findAdminsWithPhone().then((admins) =>
         notifyManyWhatsApp(
@@ -120,13 +136,31 @@ export const approveBloodRequestHandler = async (req: Request, res: Response) =>
       });
     }
 
-    void findMatchingDonors(request.bloodType, request.city).then((donors) =>
-      notifyManyWhatsApp(
-        donors.map((d) => ({ userId: d.id, phone: d.phone! })),
-        "blood_request_live",
-        donorAlertMessage(request),
-      ),
-    );
+    void Promise.all([
+      createUserNotification({
+        userId: request.requesterId,
+        type: "BLOOD_REQUEST_APPROVED",
+        title: "Blood request approved",
+        body: "Your blood request is now visible to matching donors.",
+        data: { requestId: request.id },
+      }),
+      findMatchingDonors(request.bloodType, request.city).then(async (donors) => {
+        await Promise.all([
+          notifyManyWhatsApp(
+            donors.map((d) => ({ userId: d.id, phone: d.phone! })),
+            "blood_request_live",
+            donorAlertMessage(request),
+          ),
+          createUserNotifications(donors.map((d) => ({
+            userId: d.id,
+            type: "BLOOD_REQUEST_LIVE",
+            title: "New blood request nearby",
+            body: `${request.patientName} needs ${request.bloodType} blood in ${request.city}.`,
+            data: { requestId: request.id },
+          }))),
+        ]);
+      }),
+    ]);
 
     return res.status(200).json({ success: true, data: request, message: "Request approved." });
   } catch (error) {
